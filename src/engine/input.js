@@ -1,12 +1,14 @@
-// Teclado: flechas o WASD
+// Teclado: flechas o WASD. Acción: Espacio, Enter o E.
 
 const keys = {};
+const justPressed = {};
 
 const BLOCKED_KEYS = ["arrowup", "arrowdown", "arrowleft", "arrowright", " "];
 
 export function initInput() {
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
+    if (!keys[k]) justPressed[k] = true;
     keys[k] = true;
     if (BLOCKED_KEYS.includes(k)) e.preventDefault();
   });
@@ -33,7 +35,17 @@ export function getDirection() {
   return { dx, dy };
 }
 
-// Para usar más adelante (interactuar con objetos, avanzar diálogos)
+// Mantenida: true mientras la tecla siga abajo
 export function isPressed(key) {
   return !!keys[key.toLowerCase()];
+}
+
+// Pulsación nueva: true solo en el cuadro en que se presionó la tecla
+export function wasPressed(key) {
+  return !!justPressed[key.toLowerCase()];
+}
+
+// Se llama una vez por cuadro, al final del update
+export function endFrame() {
+  for (const k in justPressed) delete justPressed[k];
 }
