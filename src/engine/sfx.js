@@ -35,53 +35,6 @@ let walkEl = null;
 const purrEls = {}; // un ronroneo por gato
 const loops = {};   // sonidos en bucle (ducha)
 
-// Reserva de elementos por sonido. En iPhone / Safari un audio solo suena si se reprodujo antes
-// dentro de un toque o tecla de la jugadora; cada copia nueva (cloneNode) sin desbloquear queda muda.
-// Por eso los sonidos se reproducen desde estos elementos, que se desbloquean al primer toque.
-const POOL_SIZE = 3; // copias reutilizables por sonido (si hacen falta más, se crean sin guardar)
-const pools = {};
-let sfxUnlocked = false;
-
-function poolFor(name) {
-  return pools[name] || (pools[name] = []);
-}
-
-// Devuelve un elemento libre de la reserva (o una copia nueva si todos están ocupados)
-function freeElement(name) {
-  const pool = poolFor(name);
-  const free = pool.find((e) => e.paused);
-  if (free) return free;
-  const el = audios[name].cloneNode();
-  if (pool.length < POOL_SIZE) pool.push(el);
-  return el;
-}
-
-// Primer toque o tecla: reproduce en silencio las copias de la reserva para desbloquearlas
-function unlockSfx() {
-  if (sfxUnlocked) return;
-  sfxUnlocked = true;
-  for (const name of Object.keys(SFX)) {
-    const pool = poolFor(name);
-    for (let i = 0; i < POOL_SIZE; i++) {
-      const el = audios[name].cloneNode();
-      el.muted = true;
-      pool.push(el);
-      const p = el.play();
-      if (p && p.then) {
-        p.then(() => {
-          el.pause();
-          el.currentTime = 0;
-          el.muted = false;
-        }).catch(() => {
-          el.muted = false;
-        });
-      }
-    }
-  }
-}
-window.addEventListener("pointerdown", unlockSfx, true);
-window.addEventListener("keydown", unlockSfx, true);
-
 // Precarga todos los sonidos al importar este archivo
 for (const [name, def] of Object.entries(SFX)) {
   const el = new Audio(def.src);
@@ -107,9 +60,7 @@ export function playSfx(name, delay = 0) {
   const base = audios[name];
   if (!base) return;
   const play = () => {
-    const el = freeElement(name); // reserva: dos sonidos iguales se superponen con otro elemento
-    el.muted = false;
-    el.currentTime = 0;
+    const el = base.cloneNode(); // copia: así dos sonidos iguales se superponen
     el.volume = level(name);
     playingCount[name] = (playingCount[name] || 0) + 1;
     let counted = true;
@@ -118,8 +69,8 @@ export function playSfx(name, delay = 0) {
       counted = false;
       playingCount[name] = Math.max(0, (playingCount[name] || 1) - 1);
     };
-    el.onended = done; // asignar (no addEventListener): el mismo elemento se reutiliza
-    el.onerror = done;
+    el.addEventListener("ended", done);
+    el.addEventListener("error", done);
     const p = el.play();
     if (p && p.catch) p.catch(done); // sin interacción todavía: no suena, así que tampoco cuenta
   };
