@@ -1,5 +1,5 @@
 // Efectos de sonido (sin música). Usan el volumen general de settings.js.
-//   playSfx("nombre")           -> suena una vez; se puede llamar seguido y se superponen (ej. nevera x2)
+//   playSfx("nombre")           -> suena una vez; se puede llamar seguido y se superponen
 //   playSfx("nombre", retraso)  -> igual, pero empieza tras `retraso` segundos
 //   isSfxPlaying("nombre")       -> true mientras ese sonido esté sonando (ej. la canción: engine/dance.js)
 //   startTyping() / stopTyping() -> sonido de escritura de los cuadros de texto (lo maneja dialogue.js)
@@ -46,11 +46,9 @@ function level(name) {
   return Math.min(1, Math.max(0, SFX[name].volume * getSettings().volume));
 }
 
-// Nevera: siempre se toman 2 objetos, así que suena dos veces seguidas (FRIDGE_GAP = segundos entre una y otra)
-const FRIDGE_GAP = 0.4;
+// Nevera: suena una sola vez por cada vez que se saca comida (salchichas, pizza, plátano, pepino)
 export function playFridge() {
   playSfx("fridge");
-  playSfx("fridge", FRIDGE_GAP);
 }
 
 // ¿Está sonando este sonido ahora mismo? (desde que empieza hasta que termina)
