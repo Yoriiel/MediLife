@@ -21,6 +21,29 @@ function blockBrowserGestures() {
   for (const name of ["selectstart", "copy", "cut", "dragstart"]) document.addEventListener(name, stop);
 }
 
+// Blindaje de la zona de los botones (cruceta y A): sin zoom (pellizco ni doble toque), sin lupa,
+// sin menú de copiar / pegar / compartir y sin selección ni arrastre. Solo se frena lo que hace el
+// navegador por su cuenta: los eventos de puntero (pointerdown...) siguen llegando para jugar.
+function lockControl(el) {
+  const stop = (e) => {
+    if (e.cancelable) e.preventDefault();
+  };
+  // touchstart / touchmove con passive: false para poder cancelarlos (frena la lupa, el zoom y el arrastre)
+  el.addEventListener("touchstart", stop, { passive: false });
+  el.addEventListener("touchmove", stop, { passive: false });
+  for (const name of [
+    "gesturestart", "gesturechange", "gestureend", // pellizco en Safari iOS
+    "dblclick",       // doble toque / doble clic
+    "contextmenu",    // menú al mantener presionado
+    "selectstart",    // selección de texto (lupa)
+    "dragstart",      // arrastrar
+    "copy", "cut", "paste",
+    "mousedown",      // evita foco y selección en el botón
+  ]) {
+    el.addEventListener(name, stop);
+  }
+}
+
 // onLayoutChange: se llama al activar los controles para recalcular el tamaño del canvas
 export function initTouchControls(onLayoutChange) {
   blockBrowserGestures();
@@ -123,6 +146,8 @@ export function initTouchControls(onLayoutChange) {
   actionBtn.addEventListener("lostpointercapture", endAction);
 
   // --- Seguridad ---
+  lockControl(dpad);
+  lockControl(actionBtn);
   // Sin menú contextual al mantener presionado
   dpad.addEventListener("contextmenu", (e) => e.preventDefault());
   actionBtn.addEventListener("contextmenu", (e) => e.preventDefault());
