@@ -3,6 +3,16 @@ html, body {
   height: 100%;
   background: #1b1b2f;
   overflow: hidden;
+  touch-action: none; /* sin zoom por pellizco ni doble toque, sin desplazamiento */
+}
+
+/* Nada se puede seleccionar, copiar ni arrastrar */
+*, *::before, *::after {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
 }
 
 body {

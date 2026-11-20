@@ -7,8 +7,23 @@ const DIR_KEYS = { up: "arrowup", down: "arrowdown", left: "arrowleft", right: "
 const DEAD_ZONE = 0.15; // fracción del tamaño de la cruceta sin dirección
 const AXIS_RATIO = 0.38; // un eje cuenta si pasa de esta fracción de la distancia (permite diagonales)
 
+// Bloquea zoom (pellizco y doble toque, que Safari iOS no evita con el meta viewport) y selección/copiado
+function blockBrowserGestures() {
+  const stop = (e) => e.preventDefault();
+  for (const name of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(name, stop); // pellizco en Safari iOS
+  document.addEventListener("touchmove", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  let lastEnd = 0; // doble toque rápido = zoom: se cancela el segundo
+  document.addEventListener("touchend", (e) => {
+    const now = Date.now();
+    if (now - lastEnd < 350) e.preventDefault();
+    lastEnd = now;
+  }, { passive: false });
+  for (const name of ["selectstart", "copy", "cut", "dragstart"]) document.addEventListener(name, stop);
+}
+
 // onLayoutChange: se llama al activar los controles para recalcular el tamaño del canvas
 export function initTouchControls(onLayoutChange) {
+  blockBrowserGestures();
   const dpad = document.getElementById("dpad");
   const actionBtn = document.getElementById("action-btn");
   if (!dpad || !actionBtn) return;
