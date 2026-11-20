@@ -103,7 +103,8 @@ function update(dt) {
   updateYoriScene(getCurrentRoom()); // después de la fiesta: Yori le habla a Medi al acercarse
   updatePartyNpcs(getCurrentRoom()); // después de la fiesta: los familiares le hablan al acercarse
 
-  setWalking(player.moving); // pasos mientras Medi camina (también al caminar sola)
+  // pasos mientras Medi camina (también al caminar sola); sin pasos en celular/tablet (body.touch)
+  setWalking(player.moving && !document.body.classList.contains("touch"));
 
   endFrame(); // limpia las pulsaciones nuevas del cuadro
 }
