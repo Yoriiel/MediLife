@@ -28,7 +28,7 @@ const MENU_SPRITES = [
 export const MENU_ASSETS = MENU_SPRITES.map((n) => "menu/" + n);
 
 // Contorno de la ventana del menú: color y grosor en píxeles (width: 0 lo quita)
-const MENU_FRAME = { color: "#f5deb3", width: 2 };
+const MENU_FRAME = { color: "#f5deb3", width: 1 };
 
 // Hilera de arbustos en la parte baja: count = cuántos; bottom = separación del borde de abajo en px
 const BUSH_ROW = { image: "menu/bush-red", count: 5, bottom: 0 };
