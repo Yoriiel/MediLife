@@ -27,6 +27,9 @@ const MENU_SPRITES = [
 ];
 export const MENU_ASSETS = MENU_SPRITES.map((n) => "menu/" + n);
 
+// Contorno de la ventana del menú: color y grosor en píxeles (width: 0 lo quita)
+const MENU_FRAME = { color: "#f5deb3", width: 2 };
+
 // Hilera de arbustos en la parte baja: count = cuántos; bottom = separación del borde de abajo en px
 const BUSH_ROW = { image: "menu/bush-red", count: 5, bottom: 0 };
 
@@ -207,4 +210,13 @@ export function drawMainMenu(ctx) {
   ctx.restore();
 
   drawMenu(ctx, screen === "main" ? mainMenu : optionsMenu);
+
+  if (MENU_FRAME.width > 0) {
+    const w = MENU_FRAME.width;
+    ctx.save();
+    ctx.strokeStyle = MENU_FRAME.color;
+    ctx.lineWidth = w;
+    ctx.strokeRect(w / 2, w / 2, VIEW_W - w, VIEW_H - w); // borde pegado al límite de la pantalla
+    ctx.restore();
+  }
 }
