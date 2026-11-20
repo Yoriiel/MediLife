@@ -42,11 +42,11 @@ export function initTouchControls(onLayoutChange) {
     if (e.pointerType === "touch") activate();
   });
 
-  // --- Cruceta ---
+  // --- Cruceta (varios dedos a la vez: sus direcciones se suman) ---
   const arrows = {};
   dpad.querySelectorAll(".arrow").forEach((a) => (arrows[a.dataset.dir] = a));
   const state = { up: false, down: false, left: false, right: false };
-  let dpadPointer = null; // el dedo que maneja la cruceta
+  const fingers = new Map(); // pointerId -> direcciones que marca ese dedo
 
   // Cambia una dirección solo si es distinta (tecla virtual + clase "on")
   const setDir = (dir, on) => {
@@ -56,37 +56,44 @@ export function initTouchControls(onLayoutChange) {
     if (arrows[dir]) arrows[dir].classList.toggle("on", on);
   };
 
-  // Vector del centro de la cruceta al dedo -> direcciones activas
-  const updateDpad = (e) => {
+  // Una dirección está activa si algún dedo la marca (dos dedos en dos flechas = diagonal)
+  const syncDirs = () => {
+    for (const dir in state) {
+      let on = false;
+      for (const f of fingers.values()) if (f[dir]) on = true;
+      setDir(dir, on);
+    }
+  };
+
+  // Vector del centro de la cruceta al dedo -> direcciones que marca ese dedo
+  const readFinger = (e) => {
     const r = dpad.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2);
     const dy = e.clientY - (r.top + r.height / 2);
     const dist = Math.hypot(dx, dy);
     const live = dist >= DEAD_ZONE * r.width;
-    setDir("right", live && dx > AXIS_RATIO * dist);
-    setDir("left", live && dx < -AXIS_RATIO * dist);
-    setDir("down", live && dy > AXIS_RATIO * dist);
-    setDir("up", live && dy < -AXIS_RATIO * dist);
-  };
-
-  const releaseDpad = () => {
-    dpadPointer = null;
-    for (const dir in state) setDir(dir, false);
+    return {
+      right: live && dx > AXIS_RATIO * dist,
+      left: live && dx < -AXIS_RATIO * dist,
+      down: live && dy > AXIS_RATIO * dist,
+      up: live && dy < -AXIS_RATIO * dist,
+    };
   };
 
   dpad.addEventListener("pointerdown", (e) => {
-    if (dpadPointer !== null) return; // ya hay un dedo en la cruceta
-    dpadPointer = e.pointerId;
+    fingers.set(e.pointerId, readFinger(e));
     try {
       dpad.setPointerCapture(e.pointerId); // deslizar fuera de la cruceta sigue contando
     } catch (err) {}
-    updateDpad(e);
+    syncDirs();
   });
   dpad.addEventListener("pointermove", (e) => {
-    if (e.pointerId === dpadPointer) updateDpad(e);
+    if (!fingers.has(e.pointerId)) return;
+    fingers.set(e.pointerId, readFinger(e));
+    syncDirs();
   });
   const endDpad = (e) => {
-    if (e.pointerId === dpadPointer) releaseDpad();
+    if (fingers.delete(e.pointerId)) syncDirs();
   };
   dpad.addEventListener("pointerup", endDpad);
   dpad.addEventListener("pointercancel", endDpad);
@@ -123,7 +130,7 @@ export function initTouchControls(onLayoutChange) {
   // Si la ventana pierde el foco, se sueltan todas las teclas para que Medi no quede caminando
   const releaseAll = () => {
     releaseVirtualKeys();
-    dpadPointer = null;
+    fingers.clear();
     actionPointer = null;
     for (const dir in state) state[dir] = false;
     dpad.querySelectorAll(".on").forEach((el) => el.classList.remove("on"));
