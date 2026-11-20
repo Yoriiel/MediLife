@@ -1,4 +1,5 @@
 import { TILE } from "../config.js";
+import { hasFlag } from "../story/events.js";
 
 // Un tile es sólido si es pared (#), vacío exterior (espacio) o si está fuera del mapa
 export function isSolidTile(room, col, row) {
@@ -31,6 +32,7 @@ export function collides(room, x, y, w, h) {
   // También se acepta una lista de zonas: `solid: [[dx, dy, ancho, alto], [...]]`
   for (const o of room.objects || []) {
     if (!o.solid) continue;
+    if (o.showIf && !hasFlag(o.showIf)) continue; // objeto oculto (showIf): tampoco estorba
     const zones = Array.isArray(o.solid[0]) ? o.solid : [o.solid];
     for (const z of zones) {
       const rx = o.x + z[0];

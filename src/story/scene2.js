@@ -11,6 +11,7 @@
 
 import { ask, say } from "../engine/dialogue.js";
 import { addItem } from "../engine/inventory.js";
+import { playFridge } from "../engine/sfx.js";
 import { setFlag } from "./events.js";
 import { setObjective } from "./objectives.js";
 
@@ -18,6 +19,7 @@ import { setObjective } from "./objectives.js";
 const SAUSAGES = 2;
 
 function takeSausages() {
+  playFridge(); // sonido de la nevera (x2)
   let taken = 0;
   for (let i = 0; i < SAUSAGES; i++) if (addItem("sausage")) taken++;
   if (taken !== SAUSAGES) return;

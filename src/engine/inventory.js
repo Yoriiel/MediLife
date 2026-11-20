@@ -8,6 +8,7 @@ import { getImage } from "./assets.js";
 export const ITEMS = {
   pizza: { image: "objects/pizza" },
   banana: { image: "objects/banana" },
+  cucumber: { image: "objects/cucumber" },
   sausage: { image: "objects/sausage" },
 };
 

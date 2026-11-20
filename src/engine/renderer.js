@@ -1,21 +1,16 @@
-import { TILE, VIEW_W, VIEW_H } from "../config.js";
+import { TILE, VIEW_W, VIEW_H, CARRY_UI, WALL_FADE } from "../config.js";
 import { SPRITE, player, getFrameIndex } from "../entities/player.js";
 import { getImage } from "./assets.js";
 import { drawMarkers } from "./markers.js";
+import { drawCarried, getCarried } from "./carry.js";
+import { drawParticles } from "./particles.js";
+import { hasFlag } from "../story/events.js";
+import { getDanceOffset } from "./dance.js";
 
 
 // Color del "vacío" fuera de la casa (el mismo oscuro del tileset)
 const VOID_COLOR = "#2f2929";
 
-// Habitaciones armadas con un tileset (room.tileset): suelo repetido + piezas ("stamps") de pared.
-//   room.tileset  nombre de la imagen, ej. "tiles/walls_floor"
-//   room.floor    [col, fila, ancho, alto] bloque del tileset que se repite como suelo (en tiles)
-//   room.stamps   lista de piezas: { src: [col, fila, ancho, alto], at: [col, fila],
-//                                    times: [nx, ny], layer: "floor" | "top" }
-//                 src = pieza dentro del tileset, at = dónde va en el mapa, todo en TILES.
-//                 times = repetirla nx x ny veces (opcional). layer "top" = se dibuja encima
-//                 de los objetos y de la jugadora (opcional).
-// En el mapa:  "." suelo   "#" pared (sólida)   " " vacío exterior (sólido, color oscuro)
 function drawTilesetFloor(ctx, room) {
   const map = room.map;
   const sheet = getImage(room.tileset);
@@ -158,7 +153,8 @@ function drawRoomTiles(ctx, room) {
 }
 
 function drawObject(ctx, o) {
-  ctx.drawImage(getImage("objects/" + o.sprite), o.x, o.y);
+  // los invitados de la fiesta dan saltitos mientras suena la canción (engine/dance.js)
+  ctx.drawImage(getImage("objects/" + o.sprite), o.x, o.y + getDanceOffset(o.sprite));
 }
 
 export function drawPlayer(ctx, player, sprite) {
@@ -174,6 +170,9 @@ export function drawPlayer(ctx, player, sprite) {
   ctx.fillRect(Math.round(player.x), Math.round(player.y + player.h - 2), player.w, 3);
 
   ctx.drawImage(sprite, index * f, 0, f, f, dx, dy, f, f);
+
+  // objeto que lleva flotando sobre la cabeza (si lleva alguno)
+  drawCarried(ctx, Math.round(player.x + player.w / 2), dy + CARRY_UI.headY);
 }
 
 // Posición de la habitación en un eje de la pantalla:
@@ -193,17 +192,54 @@ export function getRoomOffset(room) {
   };
 }
 
+// Animación de fondo (room.animations): una hoja de cuadros en fila que se repite sin parar.
+//   { image, x, y, frameW, frameH, frames, frameMs, sortY }
+//   image    = hoja con los cuadros uno al lado del otro (de izquierda a derecha)
+//   x, y     = dónde se dibuja en la habitación (esquina superior izquierda)
+//   frameMs  = milisegundos que dura cada cuadro
+//   phase    = (opcional) desfase en ms, para que dos animaciones iguales no vayan al mismo compás
+//   sortY    = línea de profundidad (por defecto, la base de la animación)
+function drawAnimation(ctx, a) {
+  const frame = Math.floor((performance.now() + (a.phase || 0)) / a.frameMs) % a.frames;
+  ctx.drawImage(getImage(a.image), frame * a.frameW, 0, a.frameW, a.frameH, a.x, a.y, a.frameW, a.frameH);
+}
+
+// Transparencia de paredes (overlays con fade: true): si Medi está detrás de la pared y su figura
+// (con lo que lleve sobre la cabeza) se superpone con ella, la pared se vuelve semitransparente.
+const overlayAlpha = new Map(); // overlay -> opacidad actual (cambia poco a poco)
+let lastDrawTime = performance.now();
+
+function currentOverlayAlpha(ov, player, dt) {
+  if (!ov.fade) return 1;
+  const footY = player.y + player.h;
+  const cx = player.x + player.w / 2;
+  const top = footY - (SPRITE.feetY - CARRY_UI.headY) - (getCarried() ? 14 : 0);
+  const behind = footY < ov.sortY;
+  const overlaps = cx + 6 > ov.x && cx - 6 < ov.x + ov.w && footY > ov.y && top < ov.y + ov.h;
+  const target = behind && overlaps ? WALL_FADE.alpha : 1;
+
+  let a = overlayAlpha.get(ov) ?? 1;
+  const step = WALL_FADE.speed * dt;
+  a = a < target ? Math.min(target, a + step) : Math.max(target, a - step);
+  overlayAlpha.set(ov, a);
+  return a;
+}
+
 // Dibuja el cuarto completo: suelo, objetos y jugadora ordenados por profundidad.
 // La habitación se centra en la pantalla; el resto queda en negro.
 export function drawScene(ctx, room, player, playerSprite) {
   const offset = getRoomOffset(room);
+  const now = performance.now();
+  const dt = Math.min((now - lastDrawTime) / 1000, 0.05);
+  lastDrawTime = now;
 
   ctx.save();
   ctx.translate(offset.x, offset.y);
 
   drawRoomTiles(ctx, room);
 
-  const objects = room.objects || [];
+  // Objetos con showIf: "marca" solo existen (se ven) cuando esa marca de events.js está activa
+  const objects = (room.objects || []).filter((o) => !o.showIf || hasFlag(o.showIf));
 
   // Lo que va pegado al suelo o a la pared (alfombras, ventana...) se dibuja primero
   for (const o of objects) if (o.layer === "floor") drawObject(ctx, o);
@@ -226,9 +262,18 @@ export function drawScene(ctx, room, player, playerSprite) {
     for (const ov of room.overlays || []) {
       drawables.push({
         y: ov.sortY,
-        draw: () => ctx.drawImage(bg, ov.x, ov.y, ov.w, ov.h, ov.x, ov.y, ov.w, ov.h),
+        draw: () => {
+          ctx.globalAlpha = currentOverlayAlpha(ov, player, dt);
+          ctx.drawImage(bg, ov.x, ov.y, ov.w, ov.h, ov.x, ov.y, ov.w, ov.h);
+          ctx.globalAlpha = 1;
+        },
       });
     }
+  }
+
+  // Animaciones de fondo (ej. el humo de la chimenea), ordenadas por profundidad como todo lo demás
+  for (const a of room.animations || []) {
+    drawables.push({ y: a.sortY ?? a.y + a.frameH, draw: () => drawAnimation(ctx, a) });
   }
 
   drawables.sort((a, b) => a.y - b.y);
@@ -236,6 +281,9 @@ export function drawScene(ctx, room, player, playerSprite) {
 
   // Piezas que van por encima de todo (solo habitaciones con tileset)
   if (room.tileset) drawStamps(ctx, room, "top");
+
+  // Partículas (corazones...), encima de los objetos
+  drawParticles(ctx, room);
 
   // Signos "!" de misión, encima de todo
   drawMarkers(ctx, room);

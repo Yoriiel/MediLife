@@ -14,14 +14,21 @@ export default {
     BOTTOM,
   ],
   objects: [
-    // alfombra (debajo de la escalera)
-    { sprite: "rug-red", x: 121, y: 122, layer: "floor" },
 
     // pared del fondo: puerta 1 y puerta 2, con cuadros entre ellas
     { sprite: "door-closed", x: 62, y: 24, layer: "floor" },
     { sprite: "door-closed", x: 222, y: 24, layer: "floor" },
     { sprite: "picture-a", x: 112, y: 16, layer: "floor" },
     { sprite: "picture-b", x: 192, y: 16, layer: "floor" },
+    { sprite: "tiny_cuckoo_clock", x: 152, y: 16, layer: "floor" },
+
+    //Objetos del suelo
+    { sprite: "wicker_laundry_basket", x: 275, y: 90, solid: [0, 10, 20, 10] },
+    { sprite: "plant_stan", x: 20, y: 20, solid: [5, 30, 20, 20] },
+    { sprite: "monstera", x: 20, y: 160, solid: [0, 20, 20, 10] },
+    { sprite: "small_bonsai_tree", x: 260, y: 145, solid: [6, 30, 20, 10] },
+    { sprite: "macrame_hanging_plant", x: 275, y: 8, solid: [5, 30, 20, 20] },
+
 
     // escalera en el piso: sólida, salvo el descanso de la izquierda (10 px), que es la entrada.
     // Zonas sólidas: riel de arriba y de abajo del descanso + todo el cuerpo de la escalera.
@@ -36,6 +43,11 @@ export default {
     { sprite: "door-bottom-closed", x: 64, y: 192, layer: "floor" },
     { sprite: "door-bottom-open", x: 224, y: 192, layer: "floor" },
   ],
+    // Signo "!" de misión sobre la escalera
+  markers: [
+   // Signo "!" sobre la escalera a la plantabaja: se ve desde que empieza la misión 1 hasta que toma las salchichas
+    { x: 112, y: 85, mission: "mission1", unless: "sausagesTaken" },
+  ],
   triggers: [
     // puertas cerradas (no dejan entrar: solo muestran texto)
     { type: "text", zone: [62, 64, 36, 12], text: "door.1" },   // puerta 1 (fondo izquierda)
@@ -46,9 +58,13 @@ export default {
 
     // escalera: solo se baja entrando por la izquierda (el descanso). Lleva a la planta baja,
     // junto a la escalera del nicho (a su derecha, mirándola)
-    { type: "exit", zone: [118, 71, 8, 24], to: "plantabaja", spawn: { x: 72, y: 98 }, facing: "left" },
+    { type: "exit", zone: [118, 71, 8, 24], to: "plantabaja", spawn: { x: 45, y: 110 }, facing: "left" },
 
     // puerta 6: de vuelta al cuarto de Medi
     { type: "exit", zone: [224, 192, 32, 16], to: "cuarto", spawn: { x: 256, y: 125 }, facing: "left" },
+
+    // comentarios de Medi al acercarse a un objeto (una sola vez cada uno); zona = [x, y, ancho, alto]
+    { type: "text", zone: [256, 95, 40, 24], text: "pasillo.laundry", once: true }, // wicker_laundry_basket
+    { type: "text", zone: [16, 66, 44, 22], text: "pasillo.plants", once: true },   // plant_stan
   ],
 };

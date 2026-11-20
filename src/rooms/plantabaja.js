@@ -27,7 +27,7 @@ export default {
     { tile: "tiles/piso-cocina", zones: [[195, 64, 74, 29], [230, 93, 19, 51]] },
     { tile: "tiles/piso-madera", zones: [[83, 64, 106, 125], [19, 96, 64, 13], [189, 144, 80, 45]] },
   ],
-  spawn: { x: 88, y: 150 }, // provisional: sala, a la izquierda de la mesa
+  spawn: { x: 45, y: 110 }, // provisional: sala, a la izquierda de la mesa
   map: MAP,
 
   // Paredes finas (píxeles de la habitación)
@@ -48,18 +48,22 @@ export default {
   ],
 
   // Partes del fondo que tapan a la jugadora cuando está detrás del muro
+  // (fade: true = el muro se vuelve semitransparente mientras ella está detrás; ajuste en WALL_FADE de config.js)
   // (sortY = línea de la base: pies por encima -> tapada; pies por debajo -> se ve delante)
   overlays: [
-    { x: 19, y: 109, w: 58, h: 49, sortY: 158 },   // muro del baño
-    { x: 77, y: 109, w: 6, h: 49, sortY: 158 },    // borde derecho del baño (pared fina): ella pasa por detrás
-    { x: 189, y: 93, w: 41, h: 49, sortY: 142 },   // muro de la cocina, izquierda del arco
-    { x: 249, y: 93, w: 20, h: 49, sortY: 142 },   // muro de la cocina, derecha del arco
+    { x: 19, y: 109, w: 58, h: 49, sortY: 158, fade: true },   // muro del baño
+    { x: 77, y: 109, w: 6, h: 49, sortY: 158, fade: true },    // borde derecho del baño (pared fina): ella pasa por detrás
+    { x: 189, y: 93, w: 41, h: 49, sortY: 142, fade: true },   // muro de la cocina, izquierda del arco
+    { x: 249, y: 93, w: 20, h: 49, sortY: 142, fade: true },   // muro de la cocina, derecha del arco
   ],
 
   // Signos "!" de misión: se ven mientras esa misión esté activa (x = centro, y = base del signo)
   markers: [
     { x: 207, y: 26, mission: "mission1", unless: "sausagesTaken" }, // sobre la nevera: tomar las salchichas
+    { x: 207, y: 26, mission: "mission2", unless: "pizzaTaken" },    // sobre la nevera: tomar la pizza (misión 2)
+    { x: 207, y: 26, mission: "mission2", when: "wantsMore", unless: "moreTaken" }, // sobre la nevera: tomar plátano y pepino
     { x: 232, y: 181, mission: "mission1b" },                          // sobre la puerta de la calle: salir a dárselas
+    { x: 45, y: 130, mission: "mission3", when: "bathrobeTaken", unless: "showerDone" }, // sobre la puerta del baño: ducharse (con la bata)
   ],
 
   objects: [
@@ -72,8 +76,8 @@ export default {
 
     // mesa redonda (vacía) con sus 4 sillas; el orden de dibujo sale de la base de cada sprite
     { sprite: "dining-chair-top", x: 129, y: 113, solid: [0, 10, 14, 14] },
-    { sprite: "dining-chair-left", x: 104, y: 127, solid: [0, 12, 13, 14] },
-    { sprite: "dining-chair-right", x: 156, y: 127, solid: [0, 12, 13, 14] },
+    { sprite: "dining-chair-left", x: 104, y: 127, sortY: 130, solid: [0, 12, 13, 14] },
+    { sprite: "dining-chair-right", x: 156, y: 127, sortY: 130, solid: [0, 12, 13, 14] },
     { sprite: "dining-table", x: 116, y: 127, solid: [1, 6, 39, 29] },
     { sprite: "dining-chair-bottom", x: 129, y: 147, solid: [0, 10, 14, 13] },
 
@@ -100,6 +104,28 @@ export default {
     // muebles contra la pared: fridge (izquierda) y estufa (derecha); su base queda en y=75
     { sprite: "kitchen-fridge", x: 197, y: 30, solid: [0, 29, 21, 12] },
     { sprite: "kitchen-stove", x: 231, y: 50, solid: [0, 6, 36, 11] },
+    { sprite: "broom", x: 253, y: 110 }, //Escoba fuera
+
+    // Fiesta sorpresa: showIf = estos objetos están ocultos hasta que esa marca (events.js) esté activa;
+    // "showerDone" se activa justo al terminar la ducha, así que aparecen cuando Medi sale de bañarse
+    { sprite: "cake", x: 117, y: 113, sortY: 200, showIf: "showerDone"  }, //cake
+    
+    { sprite: "yori", x: 117, y: 87, sortY: 140, solid: [15, 26, 5, 5], showIf: "showerDone" }, //yori
+    { sprite: "mamusik", x: 93, y: 100, sortY: 200, solid: [15, 20, 5, 20], showIf: "showerDone" }, //mamusik
+    { sprite: "kiana", x: 92, y: 138, sortY: 150, solid: [15, 20, 8, 10], showIf: "showerDone" }, //kiana
+    { sprite: "papusik", x: 147, y: 130, sortY: 150, solid: [4, 25, 16, 10], showIf: "showerDone" }, //papusik
+    { sprite: "teia", x: 145, y: 106, sortY: 150, solid: [15, 20, 5, 10], showIf: "showerDone" }, //teia
+
+    { sprite: "banner_red", x: 253, y: 95, sortY: 200, showIf: "showerDone" }, //party banner red pared derecha
+    { sprite: "banner_blue", x: 211, y: 95, sortY: 200, showIf: "showerDone" }, //party banner blue pared derecha
+    { sprite: "banner_yellow", x: 193, y: 95, sortY: 200, showIf: "showerDone" }, //party banner yellow pared derecha
+
+    { sprite: "banner_green", x: 172, y: 16, sortY: 200, showIf: "showerDone" }, //party banner green pared izquierda arriba
+    { sprite: "banner_red", x: 155, y: 16, sortY: 200, showIf: "showerDone" }, //party banner red pared izquierda arriba
+    { sprite: "banner_blue", x: 137, y: 16, sortY: 200, showIf: "showerDone" }, //party banner blue pared izquierda arriba
+    { sprite: "banner_yellow", x: 120, y: 16, sortY: 200, showIf: "showerDone" }, //party banner yellow pared izquierda arriba
+    { sprite: "banner_red", x: 103, y: 16, sortY: 200, showIf: "showerDone" }, //party banner red pared izquierda arriba
+    { sprite: "banner_green", x: 86, y: 16, sortY: 200, showIf: "showerDone" }, //party banner green pared izquierda arriba
 
     // ───────────── BAÑO (habitación izquierda, cerrada) ─────────────
 
@@ -115,12 +141,20 @@ export default {
     // pie de la escalera: al llegar frente a ella, sube al pasillo (aparece en el descanso, a la izquierda)
     { type: "exit", zone: [36, 105, 28, 6], to: "pasillo", spawn: { x: 100, y: 80 }, facing: "right" },
 
-    { type: "shower", zone: [62, 134, 22, 18], facing: "down" },
+    { type: "shower", zone: [45, 132, 22, 18], facing: "down" },
 
-    // puerta de la calle (abajo): sale al exterior, pero solo con la misión de darles las salchichas a los gatos
-    { type: "exit", zone: [222, 180, 20, 12], to: "exterior", spawn: { x: 314, y: 176 }, facing: "down", mission: "mission1b" },
+    // puerta de la calle (abajo): sale al exterior con la misión de darles las salchichas a los gatos
+    // y, después de terminar la misión 1, en cualquier momento (aunque haya otra misión activa)
+    { type: "exit", zone: [222, 180, 20, 12], to: "exterior", spawn: { x: 314, y: 176 }, facing: "down", mission: "mission1b", afterFlag: "mission1Done" },
 
     // nevera: al pararse frente a ella (con la misión 1 activa) pregunta si toma las salchichas
     { type: "fridge", zone: [195, 72, 26, 14], facing: "up" },
+    // nevera en la misión 2: pregunta "¿Tomar pizza?" (story/scene3.js)
+    { type: "fridgePizza", zone: [195, 72, 26, 14], facing: "up" },
+    // nevera en la misión 2, después de la pizza: pregunta "¿Tomar plátano y pepino?" (story/scene3.js)
+    { type: "fridgeMore", zone: [195, 72, 26, 14], facing: "up" },
+
+    // comentario de Medi al acercarse al librero (una sola vez); zona = [x, y, ancho, alto]
+    { type: "text", zone: [160, 76, 34, 16], text: "plantabaja.bookshelf", once: true }, // tall-bookshelf
   ],
 };

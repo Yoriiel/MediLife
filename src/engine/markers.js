@@ -5,6 +5,7 @@
 //     mission = clave de la misión (story/objectives.js). También acepta una lista: ["mission1", "mission2"].
 //               El signo solo se ve mientras esa misión esté activa.
 //     unless  = (opcional) nombre de una marca de events.js; cuando está activa, el signo se oculta.
+//     when    = (opcional) nombre de una marca de events.js; el signo solo se ve cuando esa marca está activa.
 
 import { getObjective } from "../story/objectives.js";
 import { hasFlag } from "../story/events.js";
@@ -50,6 +51,7 @@ export function drawMarkers(ctx, room) {
   for (const m of markers) {
     const missions = Array.isArray(m.mission) ? m.mission : [m.mission];
     if (!missions.includes(objective)) continue;
+    if (m.when && !hasFlag(m.when)) continue;     // solo se ve cuando esa marca ya está activa
     if (m.unless && hasFlag(m.unless)) continue; // se oculta cuando ya se cumplió esa marca
     drawExclamation(ctx, Math.round(m.x - W / 2), Math.round(m.y - H + bob));
   }

@@ -1,8 +1,20 @@
-// Cuadros de diálogo con efecto máquina de escribir (sin sonido).
+// Cuadros de diálogo con efecto máquina de escribir (con sonido de escritura mientras se escribe).
 //   say("clave")                              -> cuadro normal abajo
 //   say(["clave1", "clave2"], fin)            -> varios cuadros y una función al terminar
 //   say("clave", fin, { bubble: { x, y } })   -> burbuja con cola que sale de un punto
 //                                                de la habitación (x, y = punta de la cola)
+//                                                Opcional: above: true -> la burbuja queda ENCIMA del punto;
+//                                                dx -> desplaza la burbuja de lado (la cola sigue en el punto).
+//                                                bubble también acepta una lista de puntos: varias burbujas a la vez
+//   say("clave", fin, { image: "objects/rosesgif" })
+//                                             -> cuadro normal abajo con una imagen grande dentro (a la derecha).
+//                                                El cuadro crece lo necesario para que la imagen quepa entera.
+//                                                La imagen debe estar cargada (engine/assets.js: loadAssets).
+//   ask("clave", ["op1", "op2"], elegida, { keepOpen: true, onCancel: fn })
+//                                             -> opcional: keepOpen = el menú NO se cierra al elegir (se puede
+//                                                elegir una y otra vez); onCancel = se llama al cerrarlo con un
+//                                                clic / toque FUERA del cuadro o con Escape (sin onCancel, ni el
+//                                                clic ni Escape hacen nada).
 //   ask("clave", ["op1", "op2"], elegida)    -> pregunta con opciones (claves de texto).
 //                                                Cuando termina de escribirse la pregunta, se elige con
 //                                                flechas / WASD y se confirma con Espacio / Enter / E.
@@ -12,24 +24,52 @@
 
 import { VIEW_W, VIEW_H, FONT_FAMILY } from "../config.js";
 import { t } from "../i18n/index.js";
-import { wasPressed } from "./input.js";
+import { wasPressed, getMouse } from "./input.js";
+import { startTyping, stopTyping } from "./sfx.js";
+import { getImage } from "./assets.js";
 
 const FONT = `10px ${FONT_FAMILY}`;
 const LINE_H = 12;
 const BOX = { x: 8, y: VIEW_H - 64, w: VIEW_W - 16, h: 56, pad: 9 };
 const BUBBLE = { maxTextW: 104, pad: 6, tail: 9 };
+// Cuadro con imagen grande (opción image de say): margen alrededor de la imagen y separación con el texto
+const IMAGE_BOX = { pad: 6, gap: 8, scale: 1 };
 const CHARS_PER_SECOND = 35;
 const ACTION_KEYS = [" ", "enter", "e"];
 
 const measureCtx = document.createElement("canvas").getContext("2d");
 
 let queue = [];
-let current = null; // { key, text, lines, total, bubble, textW }
+let current = null; // { key, text, lines, total, bubble, image, textW }
 let shown = 0;      // caracteres visibles (con decimales)
 let timer = 0;
 let onEnd = null;
 let options = null;
-let choice = null; // { keys: [claves de las opciones], index, onSelect } mientras hay una pregunta
+let choice = null; // { keys: [claves de las opciones], index, onSelect, keepOpen, onCancel } mientras hay una pregunta
+
+// Imagen grande del cuadro actual (null si no hay o aún no cargó)
+function boxImage() {
+  return current && current.image ? getImage(current.image) || null : null;
+}
+
+// Tamaño en pantalla de la imagen del cuadro
+function imageSize(img) {
+  return { w: Math.round(img.width * IMAGE_BOX.scale), h: Math.round(img.height * IMAGE_BOX.scale) };
+}
+
+// Rectángulo del cuadro: el de siempre, o más alto si lleva una imagen grande (queda pegado abajo)
+function boxRect() {
+  const img = boxImage();
+  if (!img) return BOX;
+  const h = Math.max(BOX.h, imageSize(img).h + IMAGE_BOX.pad * 2);
+  return { x: BOX.x, y: VIEW_H - 8 - h, w: BOX.w, h, pad: BOX.pad };
+}
+
+// Ancho disponible para el texto dentro del cuadro (menos si hay imagen a la derecha)
+function boxTextWidth() {
+  const img = boxImage();
+  return BOX.w - BOX.pad * 2 - (img ? imageSize(img).w + IMAGE_BOX.pad + IMAGE_BOX.gap : 0);
+}
 
 // Parte el texto en líneas que quepan en el ancho dado
 function wrap(text, maxW) {
@@ -52,10 +92,12 @@ function wrap(text, maxW) {
 // Recalcula las líneas si cambió el texto (por ejemplo, al cambiar de idioma)
 function prepare() {
   const text = t(current.key);
-  if (current.text === text) return;
+  const hasImage = !!boxImage();
+  if (current.text === text && current.hadImage === hasImage) return;
 
   current.text = text;
-  const maxW = current.bubble ? BUBBLE.maxTextW : BOX.w - BOX.pad * 2;
+  current.hadImage = hasImage;
+  const maxW = current.bubble ? BUBBLE.maxTextW : boxTextWidth();
   current.lines = wrap(text, maxW);
   current.total = current.lines.reduce((n, l) => n + l.length, 0);
   measureCtx.font = FONT;
@@ -79,6 +121,8 @@ function next() {
     total: 0,
     textW: 0,
     bubble: options && options.bubble ? options.bubble : null,
+    image: options && options.image ? options.image : null,
+    hadImage: false,
   };
   shown = 0;
   timer = 0;
@@ -96,9 +140,16 @@ export function say(keys, callback, opts) {
 // Pregunta con opciones. optionKeys = claves de texto de cada opción (ej. ["choice.yes", "choice.no"]).
 // onSelect recibe el índice de la opción elegida. Mientras la pregunta está abierta,
 // isDialogueActive() es true, así que la jugadora no se puede mover.
-export function ask(key, optionKeys, onSelect) {
+// opts (opcional): { keepOpen: true, onCancel: función } (ver arriba)
+export function ask(key, optionKeys, onSelect, opts) {
   say(key);
-  choice = { keys: optionKeys, index: 0, onSelect };
+  choice = {
+    keys: optionKeys,
+    index: 0,
+    onSelect,
+    keepOpen: !!(opts && opts.keepOpen),
+    onCancel: (opts && opts.onCancel) || null,
+  };
 }
 
 export function isDialogueActive() {
@@ -106,6 +157,13 @@ export function isDialogueActive() {
 }
 
 export function updateDialogue(dt) {
+  stepDialogue(dt);
+  // suena la escritura solo mientras se escribe (se corta al completar el texto o cerrar el cuadro)
+  if (current && shown < current.total) startTyping();
+  else stopTyping();
+}
+
+function stepDialogue(dt) {
   if (!current) return;
   prepare();
   timer += dt;
@@ -125,8 +183,30 @@ export function updateDialogue(dt) {
     if (["arrowleft", "arrowup", "a", "w"].some(wasPressed)) choice.index = (choice.index + n - 1) % n;
     if (["arrowright", "arrowdown", "d", "s"].some(wasPressed)) choice.index = (choice.index + 1) % n;
 
+    // Clic / toque fuera del cuadro (o Escape): cierra el menú si tiene onCancel
+    if (choice.onCancel) {
+      const m = getMouse();
+      const r = boxRect();
+      const outside = m.pressed && (m.x < r.x || m.x > r.x + r.w || m.y < r.y || m.y > r.y + r.h);
+      if (outside || wasPressed("escape")) {
+        const { onCancel } = choice;
+        choice = null;
+        current = null;
+        queue = [];
+        onEnd = null;
+        options = null;
+        onCancel();
+        return;
+      }
+    }
+
     if (ACTION_KEYS.some(wasPressed)) {
-      const { index, onSelect } = choice;
+      const { index, onSelect, keepOpen } = choice;
+      if (keepOpen) {
+        // el menú se queda abierto: solo avisa de la opción elegida
+        if (onSelect) onSelect(index);
+        return;
+      }
       choice = null;
       current = null;
       queue = [];
@@ -169,15 +249,15 @@ function drawArrow(ctx, ax, ay) {
 }
 
 // Opciones de una pregunta, en una fila bajo el texto, con un triángulo junto a la elegida
-function drawChoice(ctx) {
+function drawChoice(ctx, r) {
   if (!choice || shown < current.total) return;
 
   ctx.font = FONT;
   ctx.textBaseline = "top";
   ctx.fillStyle = "#3b2314";
 
-  const y = BOX.y + BOX.h - 22;
-  let x = BOX.x + BOX.pad + 10; // deja sitio para el triángulo
+  const y = r.y + r.h - 22;
+  let x = r.x + r.pad + 10; // deja sitio para el triángulo
   choice.keys.forEach((key, i) => {
     const label = t(key);
     if (i === choice.index) {
@@ -194,28 +274,43 @@ function drawChoice(ctx) {
 }
 
 function drawBox(ctx) {
+  const r = boxRect();
+  const img = boxImage();
+
   // marco estilo madera / pergamino
   ctx.fillStyle = "#3b2314";
-  ctx.fillRect(BOX.x, BOX.y, BOX.w, BOX.h);
+  ctx.fillRect(r.x, r.y, r.w, r.h);
   ctx.fillStyle = "#c68642";
-  ctx.fillRect(BOX.x + 2, BOX.y + 2, BOX.w - 4, BOX.h - 4);
+  ctx.fillRect(r.x + 2, r.y + 2, r.w - 4, r.h - 4);
   ctx.fillStyle = "#f5deb3";
-  ctx.fillRect(BOX.x + 4, BOX.y + 4, BOX.w - 8, BOX.h - 8);
+  ctx.fillRect(r.x + 4, r.y + 4, r.w - 8, r.h - 8);
 
-  drawLines(ctx, BOX.x + BOX.pad, BOX.y + BOX.pad);
-  if (choice) drawChoice(ctx);
-  else drawArrow(ctx, BOX.x + BOX.w - 16, BOX.y + BOX.h - 14);
+  // imagen grande a la derecha, centrada de arriba a abajo
+  if (img) {
+    const s = imageSize(img);
+    ctx.drawImage(img, r.x + r.w - IMAGE_BOX.pad - s.w, r.y + Math.round((r.h - s.h) / 2), s.w, s.h);
+  }
+
+  drawLines(ctx, r.x + r.pad, r.y + r.pad);
+  if (choice) drawChoice(ctx, r);
+  else drawArrow(ctx, img ? r.x + r.pad + boxTextWidth() - 8 : r.x + r.w - 16, r.y + r.h - 14);
 }
 
-// Burbuja con cola: la cola apunta al punto (anchor) y la burbuja queda debajo
-function drawBubble(ctx, origin) {
-  const ax = Math.round(origin.x + current.bubble.x);
-  const ay = Math.round(origin.y + current.bubble.y);
+// Burbuja con cola: la cola apunta al punto (anchor); la burbuja queda debajo (o encima con above: true)
+function drawBubble(ctx, origin, anchor, isLast) {
+  const ax = Math.round(origin.x + anchor.x);
+  const ay = Math.round(origin.y + anchor.y);
+  const above = !!anchor.above;
 
   const w = Math.ceil(current.textW) + BUBBLE.pad * 2;
   const h = current.lines.length * LINE_H + BUBBLE.pad * 2 - 1;
-  const x = Math.max(4, Math.min(VIEW_W - w - 4, Math.round(ax - w / 2)));
-  const y = ay + BUBBLE.tail;
+  const x = Math.max(4, Math.min(VIEW_W - w - 4, Math.round(ax - w / 2 + (anchor.dx || 0))));
+  const y = above ? ay - BUBBLE.tail - h : ay + BUBBLE.tail;
+
+  // donde la cola se une al cuerpo (arriba del cuerpo, o abajo si la burbuja va encima)
+  const baseDark = above ? y + h - 1 : y + 1;
+  const baseLight = above ? y + h - 2 : y + 2;
+  const tipLight = above ? ay - 3 : ay + 3;
 
   const dark = "#3b2314";
   const light = "#fffaf0";
@@ -224,8 +319,8 @@ function drawBubble(ctx, origin) {
   ctx.fillStyle = dark;
   ctx.beginPath();
   ctx.moveTo(ax, ay);
-  ctx.lineTo(ax - 5, y + 1);
-  ctx.lineTo(ax + 5, y + 1);
+  ctx.lineTo(ax - 5, baseDark);
+  ctx.lineTo(ax + 5, baseDark);
   ctx.closePath();
   ctx.fill();
 
@@ -240,19 +335,21 @@ function drawBubble(ctx, origin) {
   // cola (relleno claro, tapa la unión con el borde)
   ctx.fillStyle = light;
   ctx.beginPath();
-  ctx.moveTo(ax, ay + 3);
-  ctx.lineTo(ax - 3, y + 2);
-  ctx.lineTo(ax + 3, y + 2);
+  ctx.moveTo(ax, tipLight);
+  ctx.lineTo(ax - 3, baseLight);
+  ctx.lineTo(ax + 3, baseLight);
   ctx.closePath();
   ctx.fill();
 
   drawLines(ctx, x + BUBBLE.pad, y + BUBBLE.pad);
-  drawArrow(ctx, x + w - 12, y + h - 8);
+  if (isLast) drawArrow(ctx, x + w - 12, y + h - 8); // la flecha solo en la última burbuja
 }
 
 // origin: esquina de la habitación en pantalla (para las burbujas)
 export function drawDialogue(ctx, origin) {
   if (!current) return;
-  if (current.bubble) drawBubble(ctx, origin);
-  else drawBox(ctx);
+  if (current.bubble) {
+    const anchors = Array.isArray(current.bubble) ? current.bubble : [current.bubble];
+    anchors.forEach((a, i) => drawBubble(ctx, origin, a, i === anchors.length - 1));
+  } else drawBox(ctx);
 }

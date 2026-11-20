@@ -1,10 +1,13 @@
 // English texts.
-// Pacho, Conejito, Necio, Limpiecita, Vengashe and Barriguita llena are NOT translated.
+// Pacho, Conejito, Pacho vivaracho, Necio, Limpiecita, Vengashe, Barriguita llena, Estoy apestosa, Gachiassss mi vidaaa and Te amo mi amorcito are NOT translated.
 
 export default {
+  "scene1.date": "December 1st...",
   "scene1.wake": "I woke up",
   "scene1.meow": "Meow! Meow!",
   "scene1.hungry": "Necio, Pacho is hungry...",
+  "scene1.downstairs1": "wtf, this is not my house",
+  "scene1.downstairs2": "yoyel tonti kxx",
 
   "door.closed": "It's closed.",
   // Puertas del pasillo (1 fondo izq, 2 fondo der, 3 lateral izq, 4 lateral der, 5 abajo izq)
@@ -13,32 +16,101 @@ export default {
   "door.3": "its closed",
   "door.4": "I need to collect the laundry, but I’ll do it later",
   "door.5": "Teia is in Sukhum",
-  "sala.placeholder": "Ground floor (placeholder). The living room will go here.",
 
   "mission1": "Mission: find the cat food",
   "mission1b": "Mission: give the sausages to the cats",
-  "mission2": "Mission: make breakfast",
+  "mission2": "Mission: eat something",
+  "mission.label": "Mission:",
   "mission3": "Mission: take a shower",
+  "mission3a": "get your bathrobe from your room",
+  "mission3b": "go take a shower downstairs",
 
   "scene2.fridgePrompt": "Take sausages?",
   "scene2.goOutside": "I'll go outside to give them these",
+  "scene2.catMeow": "Meow!",
   "scene2.giveFood": "Press [Space] to feed them",
+  "scene2.givePrompt": "Give sausage?",
+  "scene2.petPrompt": "Pet?",
+  "scene2.fedPacho": "Pacho vivaracho",
+  "scene2.fedConejito": "Necio",
 
+  "scene3.yico": "mmmm yico",
+  "scene3.enough": "That will be enough",
+  "scene3.pizzaFridgePrompt": "Take pizza?",
+  "scene3.hungry1": "Grrrr... I'm hungry",
+  "scene3.hungry2": "I'll go eat something",
   "scene3.pizzaPrompt": "Press [Space] to eat the pizza",
   "scene3.yum": "Nom!",
   "scene3.bananaPrompt": "Press [Space] to eat the banana",
   "scene3.fullBelly": "Barriguita llena!!!",
+  "scene3.wantMore": "I want a little more",
+  "scene3.moreFridgePrompt": "Take banana and cucumber?",
+  "scene3.cucumberPrompt": "Press [Space] to eat the cucumber",
+  "scene3.smelly": "Estoy apestosa",
 
+  "scene4.wardrobePrompt": "Take bathrobe?",
   "scene4.prompt": "Take a shower?",
   "choice.yes": "Yes",
   "choice.no": "No",
   "scene4.shower": "(shhh... 'SHOWER SOUNDS')",
   "scene4.clean": "Limpiecita",
 
-  "scene6.you": "Mwah! We threw you a birthday party my looove, do you like it?",
-  "scene6.she1": "Yeeeees, I love it!",
-  "scene6.she2": "Vengashe!",
+  "scene6.surprise1": "Everyone: Surpriseeeeee!!!!!",
+  "scene6.surprise2": "Everyone: Happy Birthday Mediiii",
+  "scene6.you": "Yoyel: We threw you a birthday party mi amoooorr, te amo muchooooo",
+  "scene6.she1": "OMGGG!!!",
+  "scene6.she2": "Gachiassss mi vidaaa!!!",
+  "scene6.she3": "Te amooooo vengasheee!!!",
+
+  // Medi's room: comments about objects (only once)
+  "cuarto.clock": "that’s weird, the time is behind kxx",
+  "cuarto.vase": "so beautiful!!",
+  "cuarto.sunflowers": "so beautiful, my little flowers)",
+  "cuarto.bookshelf": "I’ll read later",
+  "cuarto.vanity": "I need a shower kxx",
+
+  // Hallway and ground floor: comments about objects (only once)
+  "pasillo.laundry": "I have to pick up the laundry later",
+  "pasillo.plants": "What pretty little plantsss",
+  "plantabaja.bookshelf": "I have so many books...",
+
+  // Scene 7: after the party (Yori and Medi)
+  "scene7.love": "Yoyel: Te amo mi amorcito",
+  "scene7.gift": "Yoyel: Here, this is for you",
+  "scene7.menuPrompt": "What to do?",
+  "scene7.kiss": "Kiss",
+  "scene7.slap": "Slap",
+  "scene7.bite": "Bite",
+
+  // Scene 8: the family at the party
+  "scene8.mom": "Mamusik: Do you want some cake?",
+  "scene8.momReply": "Sipi",
+  "scene8.teia": "Teia: I brought sushi!!!",
+  "scene8.teiaReply": "Yayyyyy",
+  "scene8.papa": "Papusik: Enjoy your party мои тигры",
+  "scene8.papaReply": "спасибоооо",
+  "scene8.kiana": "Kiana: Let's play Roblox!!!",
+  "scene8.kianaReply": "Oki",
+
+  // Menus (main menu and pause)
+  "menu.play": "Play",
+  "menu.options": "Options",
+  "menu.back": "Back",
+  "options.title": "Options",
+  "options.music": "Music",
+  "options.volume": "Volume",
+  "options.particles": "Particles",
+  "options.language": "Language",
+  "options.on": "ON",
+  "options.off": "OFF",
+  "lang.name": "English",
+  "pause.title": "Paused",
+  "pause.resume": "Back to game",
+  "pause.quit": "Quit to main menu",
+  "pause.quitConfirm": "Sure? Progress is lost",
 
   "final.title": "Happy Birthday, mi amorrrr! Ti amuuuuu",
+  "final.letter1": "My beautiful Medi, today you turn 24, and I wanted to tell you how much I love you, and how grateful I am to have met you. You are charming, hardworking, and the best and most beautiful girlfriend in the world, always ready to give affection and love. I love how thoughtful you are and the sincerity that characterizes you. I love you.",
+  "final.letter2": "I hope you have a wonderful day and enjoy it a lot. There are many of us who love you, and we hope you have many more years of life, always happy and smiling. You are a charming woman and I am so happy to have you, piska.",
   "final.credits": "From Yoyel to Medi",
 };
