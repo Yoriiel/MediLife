@@ -1,5 +1,6 @@
 import { VIEW_W, VIEW_H } from "./config.js";
 import { initInput, initMouse, endFrame } from "./engine/input.js";
+import { initTouchControls } from "./engine/touchControls.js";
 import { loadImage, loadAssets } from "./engine/assets.js";
 import { clearScreen, drawScene, getRoomOffset } from "./engine/renderer.js";
 import { isDialogueActive, updateDialogue, drawDialogue } from "./engine/dialogue.js";
@@ -31,6 +32,7 @@ ctx.imageSmoothingEnabled = false;
 
 initInput();
 initMouse(canvas);
+initTouchControls(resizeCanvas); // cruceta y botón A en pantallas táctiles
 initAudio();
 
 // Para probar desde la consola del navegador: inventory.addItem("pizza")
@@ -128,11 +130,19 @@ function draw() {
 
 // Escalado del canvas en múltiplos enteros (pixel art nítido)
 function resizeCanvas() {
-  const scale = Math.max(1, Math.floor(Math.min(window.innerWidth / VIEW_W, window.innerHeight / VIEW_H)));
+  let availW = window.innerWidth;
+  let availH = window.innerHeight;
+  // En táctil se reserva espacio para los controles (cruceta y botón A)
+  if (document.body.classList.contains("touch")) {
+    if (window.innerWidth > window.innerHeight) availW -= 2 * 150; // horizontal: a los lados
+    else availH -= 190; // vertical: debajo
+  }
+  const scale = Math.max(1, Math.floor(Math.min(availW / VIEW_W, availH / VIEW_H)));
   canvas.style.width = VIEW_W * scale + "px";
   canvas.style.height = VIEW_H * scale + "px";
 }
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
 resizeCanvas();
 
 // Bucle principal

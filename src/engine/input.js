@@ -47,6 +47,18 @@ export function wasPressed(key) {
   return !!justPressed[key.toLowerCase()];
 }
 
+// Teclas virtuales (controles táctiles): simulan el teclado sin tocar keydown/keyup
+export function setVirtualKey(key, down) {
+  const k = key.toLowerCase();
+  if (down && !keys[k]) justPressed[k] = true; // igual que keydown: solo la primera vez
+  keys[k] = !!down;
+}
+
+// Suelta las teclas que usan los controles táctiles (cruceta y acción)
+export function releaseVirtualKeys() {
+  for (const k of ["arrowup", "arrowdown", "arrowleft", "arrowright", " "]) keys[k] = false;
+}
+
 // Mouse / pantalla táctil (coordenadas lógicas del canvas, 0..320 x 0..240)
 const mouse = { x: -1, y: -1, down: false, pressed: false, moved: false };
 

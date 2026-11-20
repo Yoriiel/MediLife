@@ -2,12 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>MediLife</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <canvas id="game" width="320" height="240"></canvas>
+  <!-- Controles táctiles: solo se muestran con body.touch (ver style.css y touchControls.js) -->
+  <div id="dpad">
+    <div class="arrow" data-dir="up">▲</div>
+    <div class="arrow" data-dir="down">▼</div>
+    <div class="arrow" data-dir="left">◀</div>
+    <div class="arrow" data-dir="right">▶</div>
+  </div>
+  <button id="action-btn" type="button">A</button>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
