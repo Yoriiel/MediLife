@@ -176,7 +176,7 @@ Promise.all([loadImage(SPRITE.src), loadAssets(requiredAssets())])
   .then(([img]) => {
     playerSprite = img;
     openMainMenu(startGame);
-    playMusic("menu");
+    setTimeout(() => playMusic("menu"), 1000);
     requestAnimationFrame(loop);
   })
   .catch((err) => {
