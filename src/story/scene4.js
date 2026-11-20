@@ -22,11 +22,9 @@ import { setObjective } from "./objectives.js";
 const FADE_OUT = 0.6;  // segundos hasta quedar en negro
 const BLACK_HOLD = 1.2; // segundos que se queda en negro
 const FADE_IN = 0.6;   // segundos para volver
-const BATHROBE_DELAY = 0.6; // segundos entre el sonido del armario y el de la bata
 
 function takeBathrobe() {
-  playSfx("closet"); // abre el armario
-  playSfx("bathrobe", BATHROBE_DELAY); // y luego toma la bata
+  playSfx("bathrobe"); // al tomar la bata (sin sonido de armario)
   setCarried("bathrobe"); // la lleva flotando sobre la cabeza
   setFlag("bathrobeTaken"); // tacha la tarea y oculta el "!"
 }
