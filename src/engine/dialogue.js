@@ -19,6 +19,10 @@
 //                                                Cuando termina de escribirse la pregunta, se elige con
 //                                                flechas / WASD y se confirma con Espacio / Enter / E.
 //                                                Llama a elegida(indice) con la opción escogida (0, 1...)
+//                                                Opcional (con onCancel): closeButton: true -> sale una X
+//                                                en la esquina del cuadro. Se elige con las flechas (como
+//                                                una opción más) y se activa con Espacio / Enter / E, o con
+//                                                un clic / toque en la X. Cierra igual que el clic fuera.
 // Espacio / Enter / E: si el texto aún se está escribiendo, lo completa;
 // si ya terminó, pasa al siguiente cuadro.
 
@@ -36,6 +40,9 @@ const BUBBLE = { maxTextW: 104, pad: 6, tail: 9 };
 const IMAGE_BOX = { pad: 6, gap: 8, scale: 1 };
 const CHARS_PER_SECOND = 35;
 const ACTION_KEYS = [" ", "enter", "e"];
+// Botón X (opción closeButton de ask): cuadrado de 12 px en la esquina superior derecha del cuadro,
+// medio fuera del marco. size = tamaño; offX / offY = desplazamiento desde la esquina del cuadro.
+const CLOSE_BTN = { size: 12, offX: 10, offY: 8 };
 
 const measureCtx = document.createElement("canvas").getContext("2d");
 
@@ -69,6 +76,16 @@ function boxRect() {
 function boxTextWidth() {
   const img = boxImage();
   return BOX.w - BOX.pad * 2 - (img ? imageSize(img).w + IMAGE_BOX.pad + IMAGE_BOX.gap : 0);
+}
+
+// Rectángulo de la X, en la esquina superior derecha del cuadro
+function closeRect(r) {
+  return { x: r.x + r.w - CLOSE_BTN.offX, y: r.y - CLOSE_BTN.offY, w: CLOSE_BTN.size, h: CLOSE_BTN.size };
+}
+
+// ¿El punto (m.x, m.y) está dentro del rectángulo q?
+function inRect(m, q) {
+  return m.x >= q.x && m.x <= q.x + q.w && m.y >= q.y && m.y <= q.y + q.h;
 }
 
 // Parte el texto en líneas que quepan en el ancho dado
@@ -149,6 +166,7 @@ export function ask(key, optionKeys, onSelect, opts) {
     onSelect,
     keepOpen: !!(opts && opts.keepOpen),
     onCancel: (opts && opts.onCancel) || null,
+    closeButton: !!(opts && opts.closeButton && opts.onCancel), // la X solo tiene sentido con onCancel
   };
 }
 
@@ -161,6 +179,17 @@ export function updateDialogue(dt) {
   // suena la escritura solo mientras se escribe (se corta al completar el texto o cerrar el cuadro)
   if (current && shown < current.total) startTyping();
   else stopTyping();
+}
+
+// Cierra una pregunta por cancelación (X, clic fuera o Escape) y llama a su onCancel
+function cancelChoice() {
+  const { onCancel } = choice;
+  choice = null;
+  current = null;
+  queue = [];
+  onEnd = null;
+  options = null;
+  onCancel();
 }
 
 function stepDialogue(dt) {
@@ -179,29 +208,29 @@ function stepDialogue(dt) {
       if (ACTION_KEYS.some(wasPressed)) shown = current.total;
       return;
     }
-    const n = choice.keys.length;
+    // Las opciones y, si la hay, la X (último lugar del recorrido con las flechas)
+    const n = choice.keys.length + (choice.closeButton ? 1 : 0);
     if (["arrowleft", "arrowup", "a", "w"].some(wasPressed)) choice.index = (choice.index + n - 1) % n;
     if (["arrowright", "arrowdown", "d", "s"].some(wasPressed)) choice.index = (choice.index + 1) % n;
 
-    // Clic / toque fuera del cuadro (o Escape): cierra el menú si tiene onCancel
+    // Clic / toque en la X, clic / toque fuera del cuadro o Escape: cierran el menú si tiene onCancel
     if (choice.onCancel) {
       const m = getMouse();
       const r = boxRect();
-      const outside = m.pressed && (m.x < r.x || m.x > r.x + r.w || m.y < r.y || m.y > r.y + r.h);
-      if (outside || wasPressed("escape")) {
-        const { onCancel } = choice;
-        choice = null;
-        current = null;
-        queue = [];
-        onEnd = null;
-        options = null;
-        onCancel();
+      const onX = !!choice.closeButton && m.pressed && inRect(m, closeRect(r));
+      const outside = m.pressed && !inRect(m, r);
+      if (onX || outside || wasPressed("escape")) {
+        cancelChoice();
         return;
       }
     }
 
     if (ACTION_KEYS.some(wasPressed)) {
-      const { index, onSelect, keepOpen } = choice;
+      const { index, onSelect, keepOpen, closeButton } = choice;
+      if (closeButton && index === choice.keys.length) {
+        cancelChoice(); // la X tiene el foco: igual que cerrar con el clic fuera
+        return;
+      }
       if (keepOpen) {
         // el menú se queda abierto: solo avisa de la opción elegida
         if (onSelect) onSelect(index);
@@ -273,6 +302,23 @@ function drawChoice(ctx, r) {
   });
 }
 
+// X en píxeles: borde oscuro, relleno claro (naranja si tiene el foco con las flechas)
+function drawCloseButton(ctx, r) {
+  const q = closeRect(r);
+  const focused = choice.index === choice.keys.length;
+  const m = 3; // margen interior de la X
+  ctx.fillStyle = "#3b2314";
+  ctx.fillRect(q.x, q.y, q.w, q.h);
+  ctx.fillStyle = focused ? "#c68642" : "#fffaf0";
+  ctx.fillRect(q.x + 1, q.y + 1, q.w - 2, q.h - 2);
+  ctx.fillStyle = "#3b2314";
+  const len = q.w - m * 2;
+  for (let i = 0; i < len; i++) {
+    ctx.fillRect(q.x + m + i, q.y + m + i, 1, 1);             // diagonal \
+    ctx.fillRect(q.x + q.w - m - 1 - i, q.y + m + i, 1, 1);   // diagonal /
+  }
+}
+
 function drawBox(ctx) {
   const r = boxRect();
   const img = boxImage();
@@ -294,6 +340,7 @@ function drawBox(ctx) {
   drawLines(ctx, r.x + r.pad, r.y + r.pad);
   if (choice) drawChoice(ctx, r);
   else drawArrow(ctx, img ? r.x + r.pad + boxTextWidth() - 8 : r.x + r.w - 16, r.y + r.h - 14);
+  if (choice && choice.closeButton) drawCloseButton(ctx, r);
 }
 
 // Burbuja con cola: la cola apunta al punto (anchor); la burbuja queda debajo (o encima con above: true)

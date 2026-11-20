@@ -22,7 +22,8 @@
 //
 // MENÚ QUE SE QUEDA ABIERTO
 //   El menú no se cierra al elegir: se pueden dar todos los besos, slaps o mordidas que se quiera.
-//   Para irse: clic / toque FUERA del cuadro de texto (o Escape). Mientras está abierto, Medi no se mueve.
+//   Para irse: la X de la esquina del cuadro (clic / toque, o con teclado: flechas hasta la X y Espacio / Enter / E),
+//   clic / toque FUERA del cuadro de texto, o Escape. Mientras está abierto, Medi no se mueve.
 //
 // PARTE 4 — Corazones
 //   Justo después de cada acción (Besar, Slap o Morder) salen corazones sobre la cabeza de Yori y también
@@ -191,8 +192,8 @@ function startYoriMenu(feet) {
         }, spot.facing);
       });
     },
-    // se queda abierto; el clic fuera / Escape lo cierra (y, tras la primera acción, salen los créditos)
-    { keepOpen: true, onCancel: () => { if (hasFlag("yoriActed")) startEnding(); } }
+    // se queda abierto; la X, el clic fuera o Escape lo cierran (y, tras la primera acción, salen los créditos)
+    { keepOpen: true, closeButton: true, onCancel: () => { if (hasFlag("yoriActed")) startEnding(); } }
   );
 }
 
