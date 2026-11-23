@@ -4,7 +4,7 @@ import { initTouchControls } from "./engine/touchControls.js";
 import { loadImage, loadAssets } from "./engine/assets.js";
 import { clearScreen, drawScene, getRoomOffset } from "./engine/renderer.js";
 import { isDialogueActive, updateDialogue, drawDialogue } from "./engine/dialogue.js";
-import { isFading, updateFade, drawFade, fadeToBlack } from "./engine/fade.js";
+import { isFading, updateFade, drawFade, fadeToBlack, fadeFromBlack } from "./engine/fade.js";
 import { drawHud } from "./engine/hud.js";
 import { ITEMS, addItem, removeItem, hasItem, drawInventory } from "./engine/inventory.js";
 import { CARRY_ITEMS, setCarried, clearCarried } from "./engine/carry.js";
@@ -23,6 +23,7 @@ import { updatePartyNpcs } from "./story/partyNpcs.js";
 import { updateBreakfastScene, drawBreakfastHint } from "./story/scene3.js";
 import { setObjective } from "./story/objectives.js";
 import { openMainMenu, updateMainMenu, drawMainMenu, MENU_ASSETS } from "./menu/mainMenu.js";
+import { needsIntro, startIntro, updateIntro, drawIntro } from "./menu/introScreen.js";
 import { isCreditsActive, updateCredits, drawCredits } from "./engine/credits.js";
 import { isPaused, tryOpenPause, updatePauseMenu, drawPauseButton, drawPauseMenu } from "./menu/pauseMenu.js";
 
@@ -47,7 +48,7 @@ window.audio = { play: playMusic, stop: stopMusic };
 
 // Estado del juego
 let playerSprite = null;
-let gameState = "menu"; // "menu" (menú principal) | "playing"
+let gameState = needsIntro() ? "intro" : "menu"; // "intro" (bienvenida, solo la primera vez) | "menu" (menú principal) | "playing"
 placePlayer(getCurrentRoom().spawn);
 
 // "Jugar": fundido a negro y arranca la escena 1 (que se aclara sola desde negro)
@@ -60,6 +61,16 @@ function startGame() {
 }
 
 function update(dt) {
+  // Bienvenida: al primer clic, toque o tecla pasa al menú con un fundido desde negro
+  if (gameState === "intro") {
+    if (updateIntro()) {
+      gameState = "menu";
+      fadeFromBlack(0.5);
+    }
+    endFrame();
+    return;
+  }
+
   if (gameState === "menu") {
     updateFade(dt);
     if (!isFading()) updateMainMenu(); // mientras funde a negro no se toca el menú
@@ -110,6 +121,11 @@ function update(dt) {
 }
 
 function draw() {
+  if (gameState === "intro") {
+    drawIntro(ctx);
+    return;
+  }
+
   if (gameState === "menu") {
     clearScreen(ctx);
     drawMainMenu(ctx);
@@ -187,7 +203,8 @@ Promise.all([loadImage(SPRITE.src), loadAssets(requiredAssets())])
   .then(([img]) => {
     playerSprite = img;
     openMainMenu(startGame);
-    playMusic("menu");
+    if (gameState === "intro") startIntro(); // la música del menú empieza con el primer gesto
+    else playMusic("menu");
     requestAnimationFrame(loop);
   })
   .catch((err) => {
