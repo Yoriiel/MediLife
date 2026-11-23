@@ -24,6 +24,8 @@ const MID = "#c68642";
 const LIGHT = "#f5deb3";
 const ON_COLOR = "#9be37a";
 const OFF_COLOR = "#d98c7a";
+const ON_SELECTED = "#2a7a1a"; // ON / OFF más oscuros para leerse sobre la fila clara elegida
+const OFF_SELECTED = "#a8321f";
 const BAR_W = 64;
 const BAR_H = 5;
 const PAD = 8;
@@ -115,11 +117,14 @@ export function drawMenu(ctx, menu) {
     const midY = r.y + r.h / 2 + 1;
 
     ctx.globalAlpha = 1;
-    ctx.fillStyle = selected ? DARK : "rgba(59, 35, 20, 0.55)";
+    ctx.fillStyle = selected ? LIGHT : "rgba(59, 35, 20, 0.55)"; // la fila elegida va clara, las demás oscuras
     ctx.fillRect(r.x, r.y, r.w, r.h);
     if (selected) {
-      ctx.fillStyle = MID;
-      ctx.fillRect(r.x, r.y, 2, r.h); // marca lateral de la fila elegida
+      ctx.fillStyle = DARK;
+      const ay = Math.round(r.y + r.h / 2);
+      ctx.fillRect(r.x + 3, ay - 2, 1, 5); // flechita ▶ de la fila elegida
+      ctx.fillRect(r.x + 4, ay - 1, 1, 3);
+      ctx.fillRect(r.x + 5, ay, 1, 1);
     }
     if (menu.outline) {
       ctx.strokeStyle = menu.outline;
@@ -129,7 +134,7 @@ export function drawMenu(ctx, menu) {
 
     const dim = item.dim && item.dim();
     ctx.globalAlpha = dim ? 0.5 : 1;
-    ctx.fillStyle = selected ? LIGHT : "#d9c4a0";
+    ctx.fillStyle = selected ? DARK : "#d9c4a0";
 
     if (item.type === "button") {
       ctx.textAlign = "center";
@@ -142,7 +147,7 @@ export function drawMenu(ctx, menu) {
     if (item.type === "toggle") {
       const on = item.get();
       ctx.textAlign = "right";
-      ctx.fillStyle = on ? ON_COLOR : OFF_COLOR;
+      ctx.fillStyle = selected ? (on ? ON_SELECTED : OFF_SELECTED) : on ? ON_COLOR : OFF_COLOR;
       ctx.fillText(on ? "ON" : "OFF", r.x + r.w - PAD, midY);
       ctx.textAlign = "left";
     } else if (item.type === "choice") {
@@ -152,11 +157,11 @@ export function drawMenu(ctx, menu) {
     } else if (item.type === "slider") {
       const b = barRect(menu, i);
       const v = Math.min(1, Math.max(0, item.get()));
-      ctx.fillStyle = "#1e120a";
+      ctx.fillStyle = selected ? "#a8865a" : "#1e120a"; // barra: más clara sobre la fila elegida
       ctx.fillRect(b.x, b.y, b.w, b.h);
-      ctx.fillStyle = MID;
+      ctx.fillStyle = selected ? DARK : MID;
       ctx.fillRect(b.x, b.y, Math.round(b.w * v), b.h);
-      ctx.fillStyle = LIGHT;
+      ctx.fillStyle = selected ? DARK : LIGHT;
       const kx = b.x + Math.round(b.w * v);
       ctx.fillRect(Math.min(kx, b.x + b.w - 2), b.y - 2, 2, b.h + 4); // perilla
     }
