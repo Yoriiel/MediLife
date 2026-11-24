@@ -24,6 +24,25 @@ export default {
   "mission3": "Mission: take a shower",
   "mission3a": "get your bathrobe from your room",
   "mission3b": "go take a shower downstairs",
+  "missionSecret": "Secret mission: find the hidden key",
+
+  // After the credits (story/ending.js): Yori speaks in a bubble if Medi doesn't have the key yet
+  "secret.notOver": "Yoyel: this isn't over yet, mi amorcito",
+  "secret.hintChest": "Yoyel: I think you should open the chest in your room kxx",
+  "secret.hintGarden": "Maybe I should look in the garden",
+
+  // Room chest (story/chest.js and engine/photoViewer.js)
+  "chest.locked": "It's locked",
+  "chest.askOpen": "Open chest?",
+  "chest.yes": "Yes",
+  "chest.no": "No",
+  "chest.open": "Open",
+
+  // Yori comments on the chest drawing (story/scene7.js, part 8); kept in Spanish like the other "te amo" lines
+  "scene7.drawingAsk": "Yoyel: Te amooo, te gustó el dibujo? kxx",
+  "scene7.drawingLove": "Siiiiii te amo",
+  "missionYoyel": "Go to Yoyel",
+  "photo.download": "Download photo",
 
   "scene2.fridgePrompt": "Take sausages?",
   "scene2.goOutside": "I'll go outside to give them these",
@@ -32,7 +51,7 @@ export default {
   "scene2.givePrompt": "Give sausage?",
   "scene2.petPrompt": "Pet?",
   "scene2.fedPacho": "Pacho vivaracho",
-  "scene2.fedConejito": "Necio",
+  "scene2.fedConejito": "Necio kxx",
 
   "scene3.yico": "mmmm yico",
   "scene3.enough": "That will be enough",
@@ -64,13 +83,13 @@ export default {
 
   // Medi's room: comments about objects (only once)
   "cuarto.clock": "that’s weird, the time is behind kxx",
-  "cuarto.vase": "so beautiful!!",
+  "cuarto.vase": "i love it!!",
   "cuarto.sunflowers": "so beautiful, my little flowers)",
   "cuarto.bookshelf": "I’ll read later",
   "cuarto.vanity": "I need a shower kxx",
 
   // Hallway and ground floor: comments about objects (only once)
-  "pasillo.laundry": "I have to pick up the laundry later",
+  "pasillo.laundry": "I have to collect the clean laundry...",
   "pasillo.plants": "What pretty little plantsss",
   "plantabaja.bookshelf": "I have so many books...",
 
@@ -84,13 +103,18 @@ export default {
 
   // Scene 8: the family at the party
   "scene8.mom": "Mamusik: Do you want some cake?",
-  "scene8.momReply": "Sipi",
+  "scene8.momReply": "Sipi please",
   "scene8.teia": "Teia: I brought sushi!!!",
   "scene8.teiaReply": "Yayyyyy",
   "scene8.papa": "Papusik: Enjoy your party мои тигры",
   "scene8.papaReply": "спасибоооо",
-  "scene8.kiana": "Kiana: Let's play Roblox!!!",
-  "scene8.kianaReply": "Oki",
+  "scene8.kiana": "Kiana: Let's play Robloooox!!!",
+  "scene8.kianaReply": "Okiiii",
+  "scene8.monster": "Looks like Luis came too kxx",
+
+  // Pickups (engine/pickups.js): texts by object id (pickup.<id>.prompt / pickup.<id>.take)
+  "pickup.key.prompt": "Secret key",
+  "pickup.key.take": "Take",
 
   // Menus (main menu and pause)
   "menu.play": "Play",

@@ -52,6 +52,10 @@ export default {
     // wardrobe: al pararse frente a él (misión 3) pregunta si toma la bata de baño
     { type: "wardrobe", zone: [236, 60, 30, 14], facing: "up" },
 
+    // cofre: al pararse frente a él. Sin la llave dice que está cerrado; con la llave abre el dibujo de Medi
+    // (story/chest.js). Zona = frente al cofre (sprite en x 23, y 86; 24x20)
+    { type: "chest", zone: [16, 104, 40, 18], facing: "up" },
+
     // puerta de la derecha (centrada en la pared): lleva al pasillo, frente a su puerta abierta
     { type: "exit", zone: [272, 112, 16, 32], to: "pasillo", spawn: { x: 235, y: 172 }, facing: "up" },
 

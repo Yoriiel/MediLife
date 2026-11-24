@@ -91,6 +91,7 @@ export default {
     { sprite: "coffee-table", x: 114, y: 70, solid: [0, 8, 36, 12] },
     { sprite: "book-stack", x: 120, y: 70, sortY: 111 },         // sobre la mesita
     { sprite: "coffee-mug", x: 135, y: 70, sortY: 111 },         // sobre la mesita
+    { sprite: "monster", x: 110, y: 47, sortY: 80,showIf: "showerDone" }, // lata de monster (oculta hasta la sorpresa; sin colisión)
 
     // ───────────── COCINA ─────────────
 

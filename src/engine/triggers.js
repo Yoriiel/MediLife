@@ -16,6 +16,9 @@
 //   { type: "fridgeMore", zone: [...], facing: "up" }
 //       -> al entrar en la zona, pregunta "¿Tomar plátano y pepino?" (story/scene3.js),
 //          pero SOLO en la misión 2, después de "Quiero un poco más", y si aún no los tomó
+//   { type: "chest", zone: [...], facing: "up" }
+//       -> al entrar en la zona, el cofre del cuarto (story/chest.js): sin la llave dice que está cerrado;
+//          con la llave abre el dibujo de Medi (visor con botón para descargar). Siempre disponible
 //   { type: "fridge", zone: [...], facing: "up" }
 //       -> al entrar en la zona, pregunta "¿Tomar salchichas?" (story/scene2.js),
 //          pero SOLO si la misión actual es "mission1" y aún no las tomó; si no, no pasa nada
@@ -28,6 +31,7 @@ import { startFridge } from "../story/scene2.js";
 import { startPizzaFridge, startMoreFridge } from "../story/scene3.js";
 import { getObjective } from "../story/objectives.js";
 import { hasFlag } from "../story/events.js";
+import { openChest } from "../story/chest.js";
 
 let lastRoomId = null;
 const inside = {};
@@ -68,6 +72,9 @@ export function updateTriggers(room, player) {
       if (getObjective() !== "mission3" || hasFlag("bathrobeTaken")) return; // sin la misión 3 (o ya la tomó), no pasa nada
       player.facing = t.facing || "up"; // mira hacia el wardrobe
       startWardrobe();
+    } else if (t.type === "chest") {
+      player.facing = t.facing || "up"; // mira hacia el cofre
+      openChest();
     } else if (t.type === "fridgePizza") {
       if (getObjective() !== "mission2" || hasFlag("pizzaTaken")) return; // sin la misión 2 (o ya la tomó), no pasa nada
       player.facing = t.facing || "up"; // mira hacia la nevera

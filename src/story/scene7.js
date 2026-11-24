@@ -39,6 +39,16 @@
 //
 // PARTE 7 — Créditos finales
 //   Tras la primera acción, al cerrar el menú se activa el final (story/ending.js).
+//
+// PARTE 8 — Yori comenta el dibujo (una sola vez)
+//   Si Medi ya vio el dibujo del cofre (marca "drawingSeen", la pone story/chest.js), antes del menú Yori
+//   le pregunta "jajajjd te gustó el dibujo?" y Medi responde "Siiiiii te amo". Luego sale el menú.
+//   Sale en los dos casos: justo después del ramo (si vio el dibujo antes de la fiesta), o la siguiente vez
+//   que Medi entra en la zona de Yori (si vio el dibujo después). Se marca "drawingTalkDone".
+//
+// PARTE 9 — Misión "Ve donde yoyel"
+//   Cuando Medi ya vio el dibujo (y la fiesta terminó, o sea Yori ya está en la casa), sale la misión
+//   "Ve donde yoyel" para que sepa a dónde ir. Se quita cuando ya se hizo el comentario del dibujo.
 
 import { say, ask, isDialogueActive } from "../engine/dialogue.js";
 import { isFading } from "../engine/fade.js";
@@ -54,6 +64,7 @@ import { CARRY_UI } from "../config.js";
 import { player, SPRITE } from "../entities/player.js";
 import { hasFlag, setFlag } from "./events.js";
 import { startEnding } from "./ending.js";
+import { getObjective, setObjective } from "./objectives.js";
 
 // Imagen grande del ramo para el cuadro de texto (se carga sola al importar este archivo)
 const ROSES_BIG = "objects/rosesgif";
@@ -122,10 +133,38 @@ function startYoriTalk(feet) {
         setCarried("roses");
         setFlag("rosesGiven");
         setFlag("yoriMet"); // ya no vuelve a empezar la conversación
-        startYoriMenu(feet); // el menú sale justo después del ramo
+        startAfterRosesMenu(feet); // el menú sale justo después del ramo (antes, el dibujo si lo vio)
       }, { image: ROSES_BIG });
     });
   }, spot.facing);
+}
+
+// ¿Medi ya vio el dibujo del cofre y Yori aún no lo ha comentado?
+function drawingPending() {
+  return hasFlag("drawingSeen") && !hasFlag("drawingTalkDone");
+}
+
+// Yori pregunta por el dibujo y Medi responde; al cerrar, sale el menú
+function startDrawingTalk(feet) {
+  faceYori(feet);
+  say(["scene7.drawingAsk", "scene7.drawingLove"], () => {
+    setFlag("drawingTalkDone"); // solo una vez
+    if (getObjective() === YOYEL_MISSION) setObjective(null); // ya fue a donde Yoyel
+    startYoriMenu(feet);
+  });
+}
+
+// Misión "Ve donde yoyel": sale cuando Medi ya vio el dibujo y la fiesta terminó (Yori ya está en la casa)
+const YOYEL_MISSION = "missionYoyel";
+function updateYoyelMission() {
+  if (!hasFlag("partyDone") || !drawingPending()) return;
+  if (getObjective() !== YOYEL_MISSION) setObjective(YOYEL_MISSION);
+}
+
+// Sale el menú, pero antes el comentario del dibujo si hace falta
+function startAfterRosesMenu(feet) {
+  if (drawingPending()) startDrawingTalk(feet);
+  else startYoriMenu(feet);
 }
 
 // Medi se gira hacia Yori
@@ -199,6 +238,7 @@ function startYoriMenu(feet) {
 
 // Se llama en cada cuadro (main.js)
 export function updateYoriScene(room) {
+  updateYoyelMission(); // misión "Ve donde yoyel" (sale en cualquier habitación)
   if (room.id !== ROOM_ID) {
     inside = false; // al volver a entrar, la zona se evalúa de cero
     return;
@@ -215,5 +255,5 @@ export function updateYoriScene(room) {
   if (!near || was) return; // solo al ENTRAR en la zona
 
   if (!hasFlag("yoriMet")) startYoriTalk(feet);
-  else if (hasFlag("rosesGiven")) startYoriMenu(feet);
+  else if (hasFlag("rosesGiven")) startAfterRosesMenu(feet);
 }

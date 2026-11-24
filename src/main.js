@@ -20,6 +20,10 @@ import { startScene1, updateScene1 } from "./story/scene1.js";
 import { updateCatsScene } from "./story/scene2cats.js";
 import { updateYoriScene } from "./story/scene7.js";
 import { updatePartyNpcs } from "./story/partyNpcs.js";
+import { updatePickups } from "./engine/pickups.js";
+import { updateSecretHint } from "./story/secretKey.js";
+import { isPhotoViewerActive, updatePhotoViewer, drawPhotoViewer } from "./engine/photoViewer.js";
+import { updateChest, drawChestHint } from "./story/chest.js";
 import { updateBreakfastScene, drawBreakfastHint } from "./story/scene3.js";
 import { setObjective } from "./story/objectives.js";
 import { openMainMenu, updateMainMenu, drawMainMenu, MENU_ASSETS } from "./menu/mainMenu.js";
@@ -85,6 +89,14 @@ function update(dt) {
     return;
   }
 
+  // Visor del dibujo (cofre): mientras está abierto el juego se congela y no se abre la pausa
+  if (isPhotoViewerActive()) {
+    updatePhotoViewer();
+    setWalking(false);
+    endFrame();
+    return;
+  }
+
   // Pausa: Escape o el botón de la esquina; mientras está abierta el juego se congela
   if (isPaused()) {
     updatePauseMenu();
@@ -113,6 +125,9 @@ function update(dt) {
   updateCatsScene(getCurrentRoom());
   updateYoriScene(getCurrentRoom()); // después de la fiesta: Yori le habla a Medi al acercarse
   updatePartyNpcs(getCurrentRoom()); // después de la fiesta: los familiares le hablan al acercarse
+  updatePickups(getCurrentRoom()); // al tocar el arbusto del exterior: la llave secreta ("Tomar")
+  updateSecretHint(dt); // misión secreta: tras 1 minuto de juego sin la llave, Medi da una pista (una vez)
+  updateChest(getCurrentRoom()); // cofre abierto: "Abrir" encima del cofre y abrirlo con Espacio / Enter / E / A
 
   // pasos mientras Medi camina (también al caminar sola); sin pasos en celular/tablet (body.touch)
   setWalking(player.moving && !document.body.classList.contains("touch"));
@@ -138,10 +153,12 @@ function draw() {
   drawHud(ctx);
   drawInventory(ctx);
   drawBreakfastHint(ctx, getRoomOffset(getCurrentRoom()));
+  if (!isDialogueActive()) drawChestHint(ctx, getRoomOffset(getCurrentRoom())); // "Abrir" sobre el cofre
   drawDialogue(ctx, getRoomOffset(getCurrentRoom()));
   drawFade(ctx);
   drawPauseMenu(ctx);
   drawPauseButton(ctx);
+  drawPhotoViewer(ctx); // el visor del cofre se ve por encima de la pausa
   drawCredits(ctx);
 }
 
@@ -188,6 +205,7 @@ function requiredAssets() {
   for (const it of Object.values(CARRY_ITEMS)) names.add(it.image); // objetos que se llevan sobre la cabeza
   for (const room of Object.values(rooms)) {
     for (const o of room.objects || []) names.add("objects/" + o.sprite);
+    for (const p of room.pickups || []) names.add("objects/" + p.sprite); // objetos que se recogen (la llave)
     if (room.tileset) names.add(room.tileset); // habitaciones armadas con tileset
     if (room.background) names.add(room.background); // habitaciones con fondo ya armado
     for (const a of room.animations || []) names.add(a.image); // animaciones de fondo (humo, etc.)

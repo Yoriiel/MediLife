@@ -10,17 +10,27 @@ export const ITEMS = {
   banana: { image: "objects/banana" },
   cucumber: { image: "objects/cucumber" },
   sausage: { image: "objects/sausage" },
+  // trim: true = en el espacio se dibuja solo la parte visible del sprite (la llave es pequeña dentro de su 16x16 y
+  // si no se recorta se vería diminuta). Quita `trim: true` para dibujarla entera como los demás objetos.
+  key: { image: "objects/key", trim: true },
 };
 
 const slots = new Array(INVENTORY_UI.slots).fill(null);
 
 // Guarda un objeto en el primer espacio libre. Devuelve false si no existe o no hay espacio.
-export function addItem(id) {
+//   slot (opcional) = espacio preferido: 0 = el primero, 1 = el segundo...; -1 = el último (el de más a la derecha).
+//   Si ese espacio está ocupado, usa el primer espacio libre.
+export function addItem(id, slot) {
   if (!ITEMS[id]) {
     console.warn("Objeto desconocido en el inventario:", id);
     return false;
   }
-  const i = slots.indexOf(null);
+  let i = -1;
+  if (slot !== undefined) {
+    const want = slot < 0 ? slots.length + slot : slot;
+    if (want >= 0 && want < slots.length && slots[want] === null) i = want;
+  }
+  if (i === -1) i = slots.indexOf(null);
   if (i === -1) return false;
   slots[i] = id;
   return true;
@@ -36,6 +46,31 @@ export function removeItem(id) {
 
 export function hasItem(id) {
   return slots.includes(id);
+}
+
+// Parte visible (no transparente) de una imagen, para los objetos con `trim: true`. Se calcula una sola vez por imagen.
+const trimCache = {};
+function getTrimBox(name, img) {
+  if (trimCache[name]) return trimCache[name];
+  const c = document.createElement("canvas");
+  c.width = img.width;
+  c.height = img.height;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  g.drawImage(img, 0, 0);
+  const d = g.getImageData(0, 0, c.width, c.height).data;
+  let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < c.height; y++) {
+    for (let x = 0; x < c.width; x++) {
+      if (d[(y * c.width + x) * 4 + 3] === 0) continue;
+      if (x < x0) x0 = x;
+      if (x > x1) x1 = x;
+      if (y < y0) y0 = y;
+      if (y > y1) y1 = y;
+    }
+  }
+  // imagen totalmente transparente: se usa entera
+  trimCache[name] = x1 < 0 ? { x: 0, y: 0, w: c.width, h: c.height } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+  return trimCache[name];
 }
 
 export function drawInventory(ctx) {
@@ -55,11 +90,13 @@ export function drawInventory(ctx) {
 
     const id = slots[i];
     if (!id) continue;
-    const img = getImage(ITEMS[id].image);
+    const item = ITEMS[id];
+    const img = getImage(item.image);
     const inner = s - 4; // margen de 2 px dentro del espacio
-    const k = Math.min(inner / img.width, inner / img.height, 1);
-    const w = Math.max(1, Math.round(img.width * k));
-    const h = Math.max(1, Math.round(img.height * k));
-    ctx.drawImage(img, x + Math.round((s - w) / 2), y0 + Math.round((s - h) / 2), w, h);
+    const box = item.trim ? getTrimBox(item.image, img) : { x: 0, y: 0, w: img.width, h: img.height };
+    const k = Math.min(inner / box.w, inner / box.h, 1);
+    const w = Math.max(1, Math.round(box.w * k));
+    const h = Math.max(1, Math.round(box.h * k));
+    ctx.drawImage(img, box.x, box.y, box.w, box.h, x + Math.round((s - w) / 2), y0 + Math.round((s - h) / 2), w, h);
   }
 }

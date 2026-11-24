@@ -24,6 +24,25 @@ export default {
   "mission3": "Misión: toma una ducha",
   "mission3a": "busca tu bata de baño en tu cuarto",
   "mission3b": "ve a tomar una ducha abajo",
+  "missionSecret": "Misión secreta: encuentra la llave escondida",
+
+  // Después de los créditos (story/ending.js): Yori habla en una burbuja si Medi aún no tiene la llave
+  "secret.notOver": "Yoyel: esto aun no ha terminado mi amorcito",
+  "secret.hintChest": "Yoyel: Creo que deberias abrir el cofre de tu habitacion kxx",
+  "secret.hintGarden": "Quizás deba buscar en el jardín",
+
+  // Cofre del cuarto (story/chest.js y engine/photoViewer.js)
+  "chest.locked": "Está cerrado con llave",
+  "chest.askOpen": "¿Abrir cofre?",
+  "chest.yes": "Sí",
+  "chest.no": "No",
+  "chest.open": "Abrir",
+
+  // Yori comenta el dibujo del cofre (story/scene7.js, parte 8)
+  "scene7.drawingAsk": "Yoyel: Te amooo, te gustó el dibujo? kxx",
+  "scene7.drawingLove": "Siiiiii te amo",
+  "missionYoyel": "Ve donde yoyel",
+  "photo.download": "Descargar foto",
 
   "scene2.fridgePrompt": "¿Tomar salchichas?",
   "scene2.goOutside": "Iré afuera a dárselas",
@@ -32,7 +51,7 @@ export default {
   "scene2.givePrompt": "¿Dar salchicha?",
   "scene2.petPrompt": "¿Acariciar?",
   "scene2.fedPacho": "Pacho vivaracho",
-  "scene2.fedConejito": "Necio",
+  "scene2.fedConejito": "Necio kxx",
 
   "scene3.yico": "mmmm yico",
   "scene3.enough": "Con esto sera suficiente",
@@ -64,13 +83,13 @@ export default {
 
   // Cuarto de Medi: comentarios sobre objetos (una sola vez)
   "cuarto.clock": "que raro la hora esta atrasada kxx",
-  "cuarto.vase": "que hermosa!!",
-  "cuarto.sunflowers": "que hermosa mis florecitas)",
-  "cuarto.bookshelf": "Leere mas tarde",
+  "cuarto.vase": "Me encanta!!",
+  "cuarto.sunflowers": "que hermosas mis florecitas)",
+  "cuarto.bookshelf": "Creo que leere un poco mas tarde",
   "cuarto.vanity": "Necesito un baño kxx",
 
   // Pasillo y planta baja: comentarios sobre objetos (una sola vez)
-  "pasillo.laundry": "Tengo que recoger la ropa mas tarde",
+  "pasillo.laundry": "Tengo que recoger la ropa limpia...",
   "pasillo.plants": "Que bonitas plantitasss",
   "plantabaja.bookshelf": "Tengo muchos libros...",
 
@@ -84,13 +103,18 @@ export default {
 
   // Escena 8: la familia en la fiesta
   "scene8.mom": "Mamusik: ¿Quieres pastel?",
-  "scene8.momReply": "Sipi",
+  "scene8.momReply": "Sipi please",
   "scene8.teia": "Teia: Traje sushi!!!",
   "scene8.teiaReply": "Yayyyyy",
   "scene8.papa": "Papusik: Disfruta de tu fiesta мои тигры",
   "scene8.papaReply": "спасибоооо",
-  "scene8.kiana": "Kiana: Juguemos Roblox!!!",
-  "scene8.kianaReply": "Oki",
+  "scene8.kiana": "Kiana: Juguemos Robloooox!!!",
+  "scene8.kianaReply": "Okiiii",
+  "scene8.monster": "Parece que Luis tambien vino kxx",
+
+  // Objetos para recoger (engine/pickups.js): textos por id del objeto (pickup.<id>.prompt / pickup.<id>.take)
+  "pickup.key.prompt": "Llave secreta",
+  "pickup.key.take": "Tomar",
 
   // Menús (menú principal y pausa)
   "menu.play": "Jugar",

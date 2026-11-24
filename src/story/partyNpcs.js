@@ -2,6 +2,7 @@
 //
 // Después de la fiesta ("partyDone"), al ENTRAR en la zona de un familiar este dice su frase y, si tiene
 // respuesta, Medi contesta en una burbuja sobre su cabeza. Cada familiar habla una sola vez.
+// También sirve para objetos sin diálogo propio (la lata de monster): sin `line`, solo habla Medi en su burbuja.
 // Para añadir otro: una línea en NPCS y sus textos en i18n. La zona sale de la posición del objeto
 // en rooms/plantabaja.js (si lo mueves, la zona lo sigue). Ajuste de cercanía: REACH.
 
@@ -30,6 +31,8 @@ const NPCS = [
   { sprite: "teia", line: "scene8.teia", reply: "scene8.teiaReply" }, // "Traje sushi!!!" / "Yayyyyy"
   { sprite: "papusik", line: "scene8.papa", reply: "scene8.papaReply" }, // "Disfruta de tu fiesta мои тигры" / "спасибоооо"
   { sprite: "kiana", line: "scene8.kiana", reply: "scene8.kianaReply" }, // "Juguemos Roblox!!!" / "Oki"
+   // Lata de monster (9x19 px) sobre el sofá: no habla nadie, solo Medi en su burbuja; pies y zona propios por su tamaño.
+  { sprite: "monster", reply: "scene8.monster", feet: { x: 4, y: 19 }, reach: { side: 18, up: 14, down: 22 } }, // "Parece que Luis tambien vino kxx"
 ];
 
 // ¿Medi estaba ya dentro de la zona de cada uno? (solo salta al ENTRAR)
@@ -46,10 +49,10 @@ function mediBubble() {
   return { x: Math.round(player.x + player.w / 2), y: y - 2, above: true };
 }
 
-function isNear(feet) {
+function isNear(feet, reach = REACH) {
   const cx = player.x + player.w / 2;
   const cy = player.y + player.h / 2;
-  return Math.abs(cx - feet.x) <= REACH.side && cy >= feet.y - REACH.up && cy <= feet.y + REACH.down;
+  return Math.abs(cx - feet.x) <= reach.side && cy >= feet.y - reach.up && cy <= feet.y + reach.down;
 }
 
 // Medi se gira hacia el familiar
@@ -63,6 +66,11 @@ function faceNpc(feet) {
 function talk(npc, feet) {
   setFlag("talked_" + npc.sprite); // una sola vez
   faceNpc(feet);
+  if (!npc.line) {
+    // sin diálogo del objeto (la lata): solo habla Medi, en su burbuja
+    if (npc.reply) say(npc.reply, null, { bubble: mediBubble() });
+    return;
+  }
   say(npc.line, () => {
     if (npc.reply) say(npc.reply, null, { bubble: mediBubble() });
   });
@@ -80,9 +88,10 @@ export function updatePartyNpcs(room) {
   for (const npc of NPCS) {
     const o = (room.objects || []).find((obj) => obj.sprite === npc.sprite);
     if (!o) continue;
-    const feet = { x: o.x + NPC_FEET.x, y: o.y + NPC_FEET.y };
+    const f = npc.feet || NPC_FEET; // pies propios (objetos que no miden 32x32)
+    const feet = { x: o.x + f.x, y: o.y + f.y };
 
-    const near = isNear(feet);
+    const near = isNear(feet, npc.reach || REACH);
     const was = !!inside[npc.sprite];
     inside[npc.sprite] = near;
     if (!near || was || blocked || hasFlag("talked_" + npc.sprite)) continue;

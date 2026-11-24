@@ -2,6 +2,7 @@ import { TILE, VIEW_W, VIEW_H, CARRY_UI, WALL_FADE } from "../config.js";
 import { SPRITE, player, getFrameIndex } from "../entities/player.js";
 import { getImage } from "./assets.js";
 import { drawMarkers } from "./markers.js";
+import { drawPickups } from "./pickups.js";
 import { drawCarried, getCarried } from "./carry.js";
 import { drawParticles } from "./particles.js";
 import { hasFlag } from "../story/events.js";
@@ -287,6 +288,9 @@ export function drawScene(ctx, room, player, playerSprite) {
 
   // Signos "!" de misión, encima de todo
   drawMarkers(ctx, room);
+
+  // Objetos para recoger (la llave sobre el arbusto): solo se ven al tocarlos, encima de todo
+  drawPickups(ctx, room, player);
 
   ctx.restore();
 }

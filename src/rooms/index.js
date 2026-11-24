@@ -13,4 +13,4 @@ export const rooms = {
   [plantabaja.id]: plantabaja,
 };
 
-export const START_ROOM = "cuarto";
+export const START_ROOM = "cuarto"; // habitación inicial

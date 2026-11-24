@@ -159,6 +159,14 @@ export default {
 
   objects: [],
 
+  // Objetos para recoger (engine/pickups.js). La llave flota sobre el arbusto de abajo a la izquierda del jardín
+  // (su sólido es [214, 203, 36, 26], en "Arbustos y plantas grandes") y solo se ve mientras Medi lo toca.
+  //   x, y = esquina del sprite de 16x16 en reposo (la parte visible de la llave queda ~2 px sobre la copa del arbusto)
+  //   touch = zona que hay que tocar; margin = tolerancia en píxeles
+  pickups: [
+    { id: "key", sprite: "key", x: 224, y: 205, touch: [214, 203, 36, 26], margin: 2, unless: "keyTaken" },
+  ],
+
   triggers: [
     // puerta de la casa: vuelve a entrar a la planta baja (aparece justo arriba de la puerta de la calle)
     { type: "exit", zone: [306, 168, 28, 9], to: "plantabaja", spawn: { x: 227, y: 168 }, facing: "up" },
