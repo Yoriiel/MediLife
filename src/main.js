@@ -15,7 +15,7 @@ import { updateTriggers } from "./engine/triggers.js";
 import { isAutoWalking, updateAutoWalk } from "./engine/autowalk.js";
 import { getSettings, setSetting } from "./engine/settings.js";
 import { initAudio, playMusic, stopMusic } from "./engine/audio.js";
-import { setWalking, stopTyping } from "./engine/sfx.js";
+import { stopTyping } from "./engine/sfx.js";
 import { startScene1, updateScene1 } from "./story/scene1.js";
 import { updateCatsScene } from "./story/scene2cats.js";
 import { updateYoriScene } from "./story/scene7.js";
@@ -46,7 +46,7 @@ window.inventory = { addItem, removeItem, hasItem };
 window.carry = { set: setCarried, clear: clearCarried };
 // Para probar misiones: story.setObjective("mission1b")
 window.story = { setObjective };
-// Para probar ajustes y música: settings.set("volume", 0.3) / settings.set("particles", false) / audio.play("game")
+// Para probar ajustes y música: settings.set("volume", 0.3) / settings.set("particles", false) / audio.play("menu")
 window.settings = { get: getSettings, set: setSetting };
 window.audio = { play: playMusic, stop: stopMusic };
 
@@ -59,7 +59,7 @@ placePlayer(getCurrentRoom().spawn);
 function startGame() {
   fadeToBlack(0.4, () => {
     gameState = "playing";
-    playMusic("game");
+    stopMusic(); // sin música de fondo mientras se juega
     startScene1();
   });
 }
@@ -92,7 +92,6 @@ function update(dt) {
   // Visor del dibujo (cofre): mientras está abierto el juego se congela y no se abre la pausa
   if (isPhotoViewerActive()) {
     updatePhotoViewer();
-    setWalking(false);
     endFrame();
     return;
   }
@@ -104,7 +103,6 @@ function update(dt) {
     return;
   }
   if (tryOpenPause(isDialogueActive())) {
-    setWalking(false);
     stopTyping();
     endFrame();
     return;
@@ -128,9 +126,6 @@ function update(dt) {
   updatePickups(getCurrentRoom()); // al tocar el arbusto del exterior: la llave secreta ("Tomar")
   updateSecretHint(dt); // misión secreta: tras 1 minuto de juego sin la llave, Medi da una pista (una vez)
   updateChest(getCurrentRoom()); // cofre abierto: "Abrir" encima del cofre y abrirlo con Espacio / Enter / E / A
-
-  // pasos mientras Medi camina (también al caminar sola); sin pasos en celular/tablet (body.touch)
-  setWalking(player.moving && !document.body.classList.contains("touch"));
 
   endFrame(); // limpia las pulsaciones nuevas del cuadro
 }
@@ -206,10 +201,8 @@ function requiredAssets() {
   for (const room of Object.values(rooms)) {
     for (const o of room.objects || []) names.add("objects/" + o.sprite);
     for (const p of room.pickups || []) names.add("objects/" + p.sprite); // objetos que se recogen (la llave)
-    if (room.tileset) names.add(room.tileset); // habitaciones armadas con tileset
     if (room.background) names.add(room.background); // habitaciones con fondo ya armado
     for (const a of room.animations || []) names.add(a.image); // animaciones de fondo (humo, etc.)
-    for (const s of room.stamps || []) if (s.image) names.add(s.image);
     for (const f of room.floors || []) names.add(f.tile); // pisos por zonas
     if (room.floorTile) names.add(room.floorTile); // piso propio de la habitación
   }

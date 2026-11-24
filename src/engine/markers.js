@@ -1,12 +1,3 @@
-// Marcadores de misión: un signo "!" que flota (sube y baja) sobre el lugar donde hay que ir.
-// Se definen en cada habitación (room.markers):
-//   { x, y, mission: "mission1" }
-//     x, y    = punto de reposo del signo: x = centro, y = base del signo (píxeles de la habitación)
-//     mission = clave de la misión (story/objectives.js). También acepta una lista: ["mission1", "mission2"].
-//               El signo solo se ve mientras esa misión esté activa.
-//     unless  = (opcional) nombre de una marca de events.js; cuando está activa, el signo se oculta.
-//     when    = (opcional) nombre de una marca de events.js; el signo solo se ve cuando esa marca está activa.
-
 import { getObjective } from "../story/objectives.js";
 import { hasFlag } from "../story/events.js";
 

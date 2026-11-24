@@ -11,7 +11,7 @@ let current = "en";
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved && languages[saved]) current = saved;
-} catch (e) {
+} catch {
   // sin almacenamiento: se queda en español
 }
 
@@ -30,7 +30,7 @@ export function setLanguage(lang) {
   current = lang;
   try {
     localStorage.setItem(STORAGE_KEY, lang);
-  } catch (e) {
+  } catch {
     // ignorar
   }
 }

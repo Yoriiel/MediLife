@@ -1,6 +1,3 @@
-// Inventario: espacios fijos (uno por objeto) dibujados en pantalla, fuera del mapa.
-// Tamaño y posición: INVENTORY_UI en src/config.js. Objetos nuevos: añádelos a ITEMS.
-
 import { VIEW_W, VIEW_H, INVENTORY_UI } from "../config.js";
 import { getImage } from "./assets.js";
 
@@ -10,16 +7,11 @@ export const ITEMS = {
   banana: { image: "objects/banana" },
   cucumber: { image: "objects/cucumber" },
   sausage: { image: "objects/sausage" },
-  // trim: true = en el espacio se dibuja solo la parte visible del sprite (la llave es pequeña dentro de su 16x16 y
-  // si no se recorta se vería diminuta). Quita `trim: true` para dibujarla entera como los demás objetos.
   key: { image: "objects/key", trim: true },
 };
 
 const slots = new Array(INVENTORY_UI.slots).fill(null);
 
-// Guarda un objeto en el primer espacio libre. Devuelve false si no existe o no hay espacio.
-//   slot (opcional) = espacio preferido: 0 = el primero, 1 = el segundo...; -1 = el último (el de más a la derecha).
-//   Si ese espacio está ocupado, usa el primer espacio libre.
 export function addItem(id, slot) {
   if (!ITEMS[id]) {
     console.warn("Objeto desconocido en el inventario:", id);

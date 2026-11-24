@@ -1,10 +1,4 @@
 // Final del juego: después de la primera acción con Yori (Besar / Slap / Morder), al cerrar su menú
-// la pantalla se funde a negro y salen los créditos (engine/credits.js). Solo pasa una vez ("creditsShown").
-//
-// DESPUÉS DE LOS CRÉDITOS (si Medi aún no tomó la llave, marca "keyTaken"):
-//   Al volver al juego, Yori dice dos cosas en una burbuja sobre su cabeza y se activa la misión secreta
-//   "Encuentra la llave escondida" (textos: secret.notOver, secret.hintChest y missionSecret en i18n).
-//   Si la llave ya estaba tomada, no pasa nada de esto.
 
 import { hasFlag, setFlag } from "./events.js";
 import { setObjective } from "./objectives.js";

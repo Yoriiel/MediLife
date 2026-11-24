@@ -1,31 +1,3 @@
-// Cuadros de diálogo con efecto máquina de escribir (con sonido de escritura mientras se escribe).
-//   say("clave")                              -> cuadro normal abajo
-//   say(["clave1", "clave2"], fin)            -> varios cuadros y una función al terminar
-//   say("clave", fin, { bubble: { x, y } })   -> burbuja con cola que sale de un punto
-//                                                de la habitación (x, y = punta de la cola)
-//                                                Opcional: above: true -> la burbuja queda ENCIMA del punto;
-//                                                dx -> desplaza la burbuja de lado (la cola sigue en el punto).
-//                                                bubble también acepta una lista de puntos: varias burbujas a la vez
-//   say("clave", fin, { image: "objects/rosesgif" })
-//                                             -> cuadro normal abajo con una imagen grande dentro (a la derecha).
-//                                                El cuadro crece lo necesario para que la imagen quepa entera.
-//                                                La imagen debe estar cargada (engine/assets.js: loadAssets).
-//   ask("clave", ["op1", "op2"], elegida, { keepOpen: true, onCancel: fn })
-//                                             -> opcional: keepOpen = el menú NO se cierra al elegir (se puede
-//                                                elegir una y otra vez); onCancel = se llama al cerrarlo con un
-//                                                clic / toque FUERA del cuadro o con Escape (sin onCancel, ni el
-//                                                clic ni Escape hacen nada).
-//   ask("clave", ["op1", "op2"], elegida)    -> pregunta con opciones (claves de texto).
-//                                                Cuando termina de escribirse la pregunta, se elige con
-//                                                flechas / WASD y se confirma con Espacio / Enter / E.
-//                                                Llama a elegida(indice) con la opción escogida (0, 1...)
-//                                                Opcional (con onCancel): closeButton: true -> sale una X
-//                                                en la esquina del cuadro. Se elige con las flechas (como
-//                                                una opción más) y se activa con Espacio / Enter / E, o con
-//                                                un clic / toque en la X. Cierra igual que el clic fuera.
-// Espacio / Enter / E: si el texto aún se está escribiendo, lo completa;
-// si ya terminó, pasa al siguiente cuadro.
-
 import { VIEW_W, VIEW_H, FONT_FAMILY } from "../config.js";
 import { t } from "../i18n/index.js";
 import { wasPressed, getMouse } from "./input.js";
@@ -154,10 +126,6 @@ export function say(keys, callback, opts) {
   next();
 }
 
-// Pregunta con opciones. optionKeys = claves de texto de cada opción (ej. ["choice.yes", "choice.no"]).
-// onSelect recibe el índice de la opción elegida. Mientras la pregunta está abierta,
-// isDialogueActive() es true, así que la jugadora no se puede mover.
-// opts (opcional): { keepOpen: true, onCancel: función } (ver arriba)
 export function ask(key, optionKeys, onSelect, opts) {
   say(key);
   choice = {

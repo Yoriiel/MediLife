@@ -1,7 +1,3 @@
-// Objeto que Medi lleva flotando sobre la cabeza (con un vaivén suave, como el signo "!").
-// Se ajusta en CARRY_UI (src/config.js). Objetos nuevos: añádelos a CARRY_ITEMS.
-// Para probar desde la consola: carry.set("bathrobe") / carry.clear()
-
 import { CARRY_UI } from "../config.js";
 import { getImage } from "./assets.js";
 
@@ -29,10 +25,6 @@ export function clearCarried() {
 
 export function getCarried() {
   return carried;
-}
-
-export function isCarrying(id) {
-  return carried === id;
 }
 
 // Se llama desde drawPlayer: x = centro de la jugadora, headTop = fila de pantalla donde empieza su cabeza

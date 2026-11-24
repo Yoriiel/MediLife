@@ -1,8 +1,4 @@
 // Misión secreta "Encuentra la llave escondida" (la activa story/ending.js después de los créditos).
-// Mientras esa misión esté activa y Medi NO tenga la llave ("keyTaken"), cuenta el tiempo de juego:
-// solo corre mientras Medi puede moverse (sin diálogos, fundidos ni cambios de habitación; la pausa y los
-// créditos no llegan aquí). Al cumplirse SECRET_HINT_SECONDS, Medi dice una vez una pista en una burbuja
-// sobre su cabeza ("secret.hintGarden") y se marca "secretHintShown".
 
 import { say, isDialogueActive } from "../engine/dialogue.js";
 import { isFading } from "../engine/fade.js";

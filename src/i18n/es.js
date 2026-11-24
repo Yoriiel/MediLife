@@ -1,5 +1,4 @@
 // Textos en español.
-// Pacho, Conejito, Pacho vivaracho, Necio, Limpiecita, Vengashe, Barriguita llena, Estoy apestosa, Gachiassss mi vidaaa, Te amo mi amorcito y mmmm yico no se traducen.
 
 export default {
   "scene1.date": "1 de Diciembre...",
@@ -9,7 +8,6 @@ export default {
   "scene1.downstairs1": "wtf, esta no es mi casa",
   "scene1.downstairs2": "yoyel tonti kxx",
 
-  "door.closed": "Está cerrada.",
   // Puertas del pasillo (1 fondo izq, 2 fondo der, 3 lateral izq, 4 lateral der, 5 abajo izq)
   "door.1": "Que raro, papa cerro la puerta",
   "door.2": "Oh, Kiana debe estar ocupada",
@@ -47,14 +45,12 @@ export default {
   "scene2.fridgePrompt": "¿Tomar salchichas?",
   "scene2.goOutside": "Iré afuera a dárselas",
   "scene2.catMeow": "¡Miau!",
-  "scene2.giveFood": "Presiona [Espacio] para darles de comer",
   "scene2.givePrompt": "¿Dar salchicha?",
   "scene2.petPrompt": "¿Acariciar?",
   "scene2.fedPacho": "Pacho vivaracho",
   "scene2.fedConejito": "Necio kxx",
 
   "scene3.yico": "mmmm yico",
-  "scene3.enough": "Con esto sera suficiente",
   "scene3.pizzaFridgePrompt": "¿Tomar pizza?",
   "scene3.hungry1": "Grrrr... tengo hambre",
   "scene3.hungry2": "Iré a comer algo",
@@ -71,7 +67,6 @@ export default {
   "scene4.prompt": "¿Darse una ducha?",
   "choice.yes": "Sí",
   "choice.no": "No",
-  "scene4.shower": "(shhh...  'SONIDOS DE DUCHA')",
   "scene4.clean": "Limpiecita",
 
   "scene6.surprise1": "Todos: Sorpresaaaaaa!!!!!",
@@ -129,8 +124,6 @@ export default {
   "options.volume": "Volumen",
   "options.particles": "Partículas",
   "options.language": "Idioma",
-  "options.on": "ON",
-  "options.off": "OFF",
   "lang.name": "Español",
   "pause.title": "Pausa",
   "pause.resume": "Volver al juego",

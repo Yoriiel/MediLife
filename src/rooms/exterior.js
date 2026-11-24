@@ -1,5 +1,3 @@
-
-
 const COLS = 38;
 const ROWS = 20;
 const ROW = ".".repeat(COLS);
@@ -34,7 +32,6 @@ export default {
   name: "Exterior",
   background: "rooms/exterior",
   // justo frente a la puerta de la casa (la caja de pies de Medi mide 10x6).
-  // OJO: debe quedar FUERA de la zona de la puerta de regreso (si no, se dispara al aparecer).
   spawn: { x: 314, y: 176 },
   map: Array.from({ length: ROWS }, () => ROW),
 
@@ -150,8 +147,6 @@ export default {
   ],
 
   // Animaciones del exterior: el humo de la chimenea (6 cuadros de 48x48, 150 ms cada uno) y la cola de los gatos.
-  // El fondo (exterior.png) ya viene SIN humo; el dibujo del humo trae también la chimenea y el tejado detrás.
-  // sortY = base de la casa (humo) o línea de las patas (gatos).
   animations: [
     { image: "rooms/exterior-smoke", x: 224, y: 32, frameW: 48, frameH: 48, frames: 6, frameMs: 150, sortY: 170 },
     ...catAnimations, // la cola de los gatos
@@ -160,9 +155,6 @@ export default {
   objects: [],
 
   // Objetos para recoger (engine/pickups.js). La llave flota sobre el arbusto de abajo a la izquierda del jardín
-  // (su sólido es [214, 203, 36, 26], en "Arbustos y plantas grandes") y solo se ve mientras Medi lo toca.
-  //   x, y = esquina del sprite de 16x16 en reposo (la parte visible de la llave queda ~2 px sobre la copa del arbusto)
-  //   touch = zona que hay que tocar; margin = tolerancia en píxeles
   pickups: [
     { id: "key", sprite: "key", x: 224, y: 205, touch: [214, 203, 36, 26], margin: 2, unless: "keyTaken" },
   ],

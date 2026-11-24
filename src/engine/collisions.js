@@ -2,7 +2,7 @@ import { TILE } from "../config.js";
 import { hasFlag } from "../story/events.js";
 
 // Un tile es sólido si es pared (#), vacío exterior (espacio) o si está fuera del mapa
-export function isSolidTile(room, col, row) {
+function isSolidTile(room, col, row) {
   const map = room.map;
   if (row < 0 || row >= map.length || col < 0 || col >= map[row].length) return true;
   const ch = map[row][col];

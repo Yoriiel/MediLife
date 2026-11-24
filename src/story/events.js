@@ -1,7 +1,7 @@
 // Progreso de la historia (qué ya pasó, qué se desbloqueó).
-// Por ahora vacío: lo usaremos cuando añadamos diálogos y objetos.
+// Solo se accede por setFlag / hasFlag.
 
-export const flags = {};
+const flags = {};
 
 export function setFlag(name, value = true) {
   flags[name] = value;

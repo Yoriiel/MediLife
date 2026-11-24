@@ -1,10 +1,4 @@
 // Escena 8: la familia en la fiesta (eventos de una sola vez)
-//
-// Después de la fiesta ("partyDone"), al ENTRAR en la zona de un familiar este dice su frase y, si tiene
-// respuesta, Medi contesta en una burbuja sobre su cabeza. Cada familiar habla una sola vez.
-// También sirve para objetos sin diálogo propio (la lata de monster): sin `line`, solo habla Medi en su burbuja.
-// Para añadir otro: una línea en NPCS y sus textos en i18n. La zona sale de la posición del objeto
-// en rooms/plantabaja.js (si lo mueves, la zona lo sigue). Ajuste de cercanía: REACH.
 
 import { say, isDialogueActive } from "../engine/dialogue.js";
 import { isFading } from "../engine/fade.js";
@@ -24,8 +18,6 @@ const NPC_FEET = { x: 16, y: 27 };
 // Zona de interacción alrededor de sus pies (píxeles, desde el centro de la caja de pies de Medi)
 const REACH = { side: 18, up: 18, down: 12 }; // up en 18: los puntos de Yori (scene7) quedan fuera de la zona de mamá
 
-// sprite = nombre del objeto en la habitación; line = lo que dice; reply = respuesta de Medi (opcional);
-// needs = marca (events.js) que debe estar activa para que hable (opcional)
 const NPCS = [
   { sprite: "mamusik", line: "scene8.mom", reply: "scene8.momReply", needs: "rosesGiven" }, // "¿Quieres pastel?" / "Sipi"; solo después de que Yori le dé el ramo
   { sprite: "teia", line: "scene8.teia", reply: "scene8.teiaReply" }, // "Traje sushi!!!" / "Yayyyyy"

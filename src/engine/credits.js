@@ -1,8 +1,3 @@
-// Créditos finales: pantalla negra con el texto subiendo despacio (se dibuja por encima de todo).
-//   startCredits(callback) -> empieza; al terminar llama a callback
-//   isCreditsActive() / updateCredits(dt) / drawCredits(ctx)   (main.js)
-// El contenido sale de CREDITS (claves de i18n); para añadir líneas, añade entradas ahí.
-
 import { VIEW_W, VIEW_H, FONT_FAMILY } from "../config.js";
 import { t } from "../i18n/index.js";
 import { isPressed, getMouse } from "./input.js";

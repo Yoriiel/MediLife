@@ -1,5 +1,4 @@
 // Pantalla de bienvenida (negro + texto) antes del menú principal; solo se ve una vez por sesión.
-// needsIntro() / startIntro() / updateIntro() -> true al pasar al menú / drawIntro(ctx)
 
 import { FONT_FAMILY, VIEW_W, VIEW_H } from "../config.js";
 import { t } from "../i18n/index.js";
@@ -14,7 +13,7 @@ let triggered = false;
 export function needsIntro() {
   try {
     return sessionStorage.getItem(SEEN_KEY) !== "1";
-  } catch (e) {
+  } catch {
     return true;
   }
 }
@@ -37,7 +36,7 @@ export function updateIntro() {
   for (const name of EVENTS) window.removeEventListener(name, onGesture);
   try {
     sessionStorage.setItem(SEEN_KEY, "1");
-  } catch (e) {
+  } catch {
     // sin almacenamiento: se mostrará de nuevo al recargar
   }
   return true;

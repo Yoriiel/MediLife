@@ -1,15 +1,4 @@
 // Escena 4: la bata y la ducha (misión 3)
-//
-// 0. En el cuarto, al pararse frente al wardrobe sale "¿Tomar bata de baño?" con "Sí" / "No".
-//    Con "Sí", Medi se pone la bata flotando sobre la cabeza y se tacha la primera tarea. Con "No" puede irse y,
-//    al salir y volver a entrar en la zona, la pregunta vuelve a salir.
-// 1. Medi llega al borde del baño y aparece la pregunta "¿Darse una ducha?" con "Sí" / "No".
-//    Si elige "No", puede irse; al volver a pararse en la zona (salir y entrar de nuevo),
-//    la pregunta vuelve a aparecer mientras la misión de la ducha siga activa.
-//    La ducha solo funciona si ya tomó la bata (misión 3).
-// 2. Con "Sí", la pantalla se pone en negro (un momento) y vuelve; la bata desaparece de su cabeza.
-// 3. Medi dice "Limpiecita" y la misión 3 termina.
-// 4. Al cerrar ese cuadro empieza la fiesta sorpresa (story/scene6.js).
 
 import { ask, say } from "../engine/dialogue.js";
 import { fadeToBlack, fadeFromBlack } from "../engine/fade.js";

@@ -1,7 +1,3 @@
-// Texto fijo en pantalla (objetivo actual).
-// Si la misión tiene varias tareas (TASKS en story/objectives.js), se muestra una línea por tarea
-// y las ya cumplidas salen tachadas. "Misión:" va solo en la primera línea y las demás se alinean debajo del texto.
-
 import { FONT_FAMILY } from "../config.js";
 import { t } from "../i18n/index.js";
 import { getObjective, TASKS } from "../story/objectives.js";

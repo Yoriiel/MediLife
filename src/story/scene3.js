@@ -116,7 +116,6 @@ export function updateBreakfastScene(room, dt) {
   // pasó el delay: Medi dice "Estoy apestosa" (cuando no haya otro cuadro o fundido) y empieza la misión 3
   if (mission3Pending) {
     mission3Pending = false;
-    setFlag("mission3Started");
     say("scene3.smelly", () => {
       setObjective("mission3");
     });

@@ -1,7 +1,4 @@
 // Menú principal: pantalla de inicio con "Jugar" y "Opciones".
-//   openMainMenu(onPlay)  -> muestra el menú; onPlay se llama al elegir "Jugar"
-//   updateMainMenu()      -> una vez por cuadro
-//   drawMainMenu(ctx)     -> dibuja el fondo, el título y el menú
 
 import { FONT_FAMILY, VIEW_W, VIEW_H } from "../config.js";
 import { t } from "../i18n/index.js";
@@ -33,8 +30,6 @@ const MENU_FRAME = { color: "#f5deb3", width: 1 };
 // Hilera de arbustos en la parte baja: count = cuántos; bottom = separación del borde de abajo en px
 const BUSH_ROW = { image: "menu/bush-red", count: 5, bottom: 0 };
 
-// Plantas del menú: img = nombre en public/menu/, x = borde izquierdo, y = base (pie) de la planta.
-// Se dibujan en este orden (arriba de la lista = más atrás); front: true = encima de los arbustos.
 const MENU_PLANTS = [
   { img: "flower13-purple", x: 34, y: 214 },
   { img: "flower2-purple", x: 70, y: 224 },

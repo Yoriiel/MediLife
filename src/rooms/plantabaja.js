@@ -41,15 +41,12 @@ export default {
     [189, 16, 6, 126],   // pared que separa la cocina del resto (hasta la base del muro de la cocina)
 
     // BASES de los muros: la colisión está en la repisa de abajo (línea azul), no en el borde de arriba.
-    // La franja de muro que queda por encima se puede caminar y la jugadora queda "detrás" (ver overlays).
     [19, 153, 58, 5],    // base del muro del baño (repisa y 153-157)
     [189, 137, 42, 5],   // base del muro de la cocina, a la izquierda del arco (repisa y 137-141)
     [248, 137, 21, 5],   // base del muro de la cocina, a la derecha del arco
   ],
 
   // Partes del fondo que tapan a la jugadora cuando está detrás del muro
-  // (fade: true = el muro se vuelve semitransparente mientras ella está detrás; ajuste en WALL_FADE de config.js)
-  // (sortY = línea de la base: pies por encima -> tapada; pies por debajo -> se ve delante)
   overlays: [
     { x: 19, y: 109, w: 58, h: 49, sortY: 158, fade: true },   // muro del baño
     { x: 77, y: 109, w: 6, h: 49, sortY: 158, fade: true },    // borde derecho del baño (pared fina): ella pasa por detrás
@@ -67,8 +64,7 @@ export default {
   ],
 
   objects: [
-    // escalera al pasillo: pegada al muro del nicho (arriba alineada con su borde) y apoyada en el
-    // corredor (base en y=105). Es sólida; se sube parándose frente a su base (ver triggers)
+    // escalera al pasillo: pegada al muro del nicho (arriba alineada con su borde)
     { sprite: "stairs", x: 29, y: 47, solid: [0, 0, 38, 58] },
 
     // alfombra circular morada (debajo de la mesa)
@@ -107,8 +103,7 @@ export default {
     { sprite: "kitchen-stove", x: 231, y: 50, solid: [0, 6, 36, 11] },
     { sprite: "broom", x: 253, y: 110 }, //Escoba fuera
 
-    // Fiesta sorpresa: showIf = estos objetos están ocultos hasta que esa marca (events.js) esté activa;
-    // "showerDone" se activa justo al terminar la ducha, así que aparecen cuando Medi sale de bañarse
+    // Fiesta sorpresa: showIf = estos objetos están ocultos hasta que esa marca (events.js)
     { sprite: "cake", x: 117, y: 113, sortY: 200, showIf: "showerDone"  }, //cake
     
     { sprite: "yori", x: 117, y: 87, sortY: 140, solid: [15, 26, 5, 5], showIf: "showerDone" }, //yori
@@ -144,8 +139,6 @@ export default {
 
     { type: "shower", zone: [45, 132, 22, 18], facing: "down" },
 
-    // puerta de la calle (abajo): sale al exterior con la misión de darles las salchichas a los gatos
-    // y, después de terminar la misión 1, en cualquier momento (aunque haya otra misión activa)
     { type: "exit", zone: [222, 180, 20, 12], to: "exterior", spawn: { x: 314, y: 176 }, facing: "down", mission: "mission1b", afterFlag: "mission1Done" },
 
     // nevera: al pararse frente a ella (con la misión 1 activa) pregunta si toma las salchichas

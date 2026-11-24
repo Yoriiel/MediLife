@@ -8,51 +8,6 @@ import { drawParticles } from "./particles.js";
 import { hasFlag } from "../story/events.js";
 import { getDanceOffset } from "./dance.js";
 
-
-// Color del "vacío" fuera de la casa (el mismo oscuro del tileset)
-const VOID_COLOR = "#2f2929";
-
-function drawTilesetFloor(ctx, room) {
-  const map = room.map;
-  const sheet = getImage(room.tileset);
-  const [fc, fr, fw, fh] = room.floor || [0, 0, 1, 1];
-
-  for (let row = 0; row < map.length; row++) {
-    for (let col = 0; col < map[row].length; col++) {
-      const x = col * TILE;
-      const y = row * TILE;
-      if (map[row][col] === ".") {
-        const sc = fc + (col % fw);
-        const sr = fr + (row % fh);
-        ctx.drawImage(sheet, sc * TILE, sr * TILE, TILE, TILE, x, y, TILE, TILE);
-      } else {
-        // pared o vacío: de fondo oscuro; las piezas (stamps) se dibujan encima
-        ctx.fillStyle = VOID_COLOR;
-        ctx.fillRect(x, y, TILE, TILE);
-      }
-    }
-  }
-}
-
-function drawStamps(ctx, room, layer) {
-  for (const s of room.stamps || []) {
-    if ((s.layer || "floor") !== layer) continue;
-    const img = getImage(s.image || room.tileset);
-    const [sc, sr, sw, sh] = s.src;
-    const [ac, ar] = s.at;
-    const [nx, ny] = s.times || [1, 1];
-    for (let j = 0; j < ny; j++) {
-      for (let i = 0; i < nx; i++) {
-        ctx.drawImage(
-          img,
-          sc * TILE, sr * TILE, sw * TILE, sh * TILE,
-          (ac + i * sw) * TILE, (ar + j * sh) * TILE, sw * TILE, sh * TILE
-        );
-      }
-    }
-  }
-}
-
 // Fondo con pisos (room.floors): cambia solo los píxeles de piso (room.floorColors) dentro de cada zona.
 // Se arma una vez por habitación y se guarda; sin room.floors se usa la imagen tal cual.
 const bgCache = {};
@@ -106,12 +61,6 @@ function drawRoomTiles(ctx, room) {
   // Habitación con fondo ya armado (room.background = "carpeta/nombre" de una imagen en public/)
   if (room.background) {
     ctx.drawImage(getBackground(room), 0, 0);
-    return;
-  }
-
-  if (room.tileset) {
-    drawTilesetFloor(ctx, room);
-    drawStamps(ctx, room, "floor");
     return;
   }
 
@@ -177,9 +126,6 @@ export function drawPlayer(ctx, player, sprite) {
 }
 
 // Posición de la habitación en un eje de la pantalla:
-//  - si cabe entera, se centra;
-//  - si es más grande que la pantalla, la cámara sigue a la jugadora (sin salirse de los bordes).
-// `focus` va en píxeles ENTEROS para que la jugadora no "tiemble" respecto al fondo.
 function axisOffset(view, size, focus) {
   if (size <= view) return Math.round((view - size) / 2);
   return Math.min(0, Math.max(view - size, Math.round(view / 2) - focus));
@@ -194,19 +140,12 @@ export function getRoomOffset(room) {
 }
 
 // Animación de fondo (room.animations): una hoja de cuadros en fila que se repite sin parar.
-//   { image, x, y, frameW, frameH, frames, frameMs, sortY }
-//   image    = hoja con los cuadros uno al lado del otro (de izquierda a derecha)
-//   x, y     = dónde se dibuja en la habitación (esquina superior izquierda)
-//   frameMs  = milisegundos que dura cada cuadro
-//   phase    = (opcional) desfase en ms, para que dos animaciones iguales no vayan al mismo compás
-//   sortY    = línea de profundidad (por defecto, la base de la animación)
 function drawAnimation(ctx, a) {
   const frame = Math.floor((performance.now() + (a.phase || 0)) / a.frameMs) % a.frames;
   ctx.drawImage(getImage(a.image), frame * a.frameW, 0, a.frameW, a.frameH, a.x, a.y, a.frameW, a.frameH);
 }
 
 // Transparencia de paredes (overlays con fade: true): si Medi está detrás de la pared y su figura
-// (con lo que lleve sobre la cabeza) se superpone con ella, la pared se vuelve semitransparente.
 const overlayAlpha = new Map(); // overlay -> opacidad actual (cambia poco a poco)
 let lastDrawTime = performance.now();
 
@@ -227,7 +166,6 @@ function currentOverlayAlpha(ov, player, dt) {
 }
 
 // Dibuja el cuarto completo: suelo, objetos y jugadora ordenados por profundidad.
-// La habitación se centra en la pantalla; el resto queda en negro.
 export function drawScene(ctx, room, player, playerSprite) {
   const offset = getRoomOffset(room);
   const now = performance.now();
@@ -255,9 +193,6 @@ export function drawScene(ctx, room, player, playerSprite) {
   drawables.push({ y: player.y + player.h, draw: () => drawPlayer(ctx, player, playerSprite) });
 
   // Partes del fondo que tapan a la jugadora cuando está DETRÁS de una pared (room.overlays):
-  //   { x, y, w, h, sortY }  -> rectángulo del fondo (en píxeles) que se vuelve a dibujar encima de ella.
-  //   sortY = línea de la base de la pared: si los pies de la jugadora están por encima de esa línea
-  //   (detrás), la pared la tapa; si están por debajo (delante), ella se dibuja sobre la pared.
   if (room.background) {
     const bg = getBackground(room);
     for (const ov of room.overlays || []) {
@@ -279,9 +214,6 @@ export function drawScene(ctx, room, player, playerSprite) {
 
   drawables.sort((a, b) => a.y - b.y);
   drawables.forEach((d) => d.draw());
-
-  // Piezas que van por encima de todo (solo habitaciones con tileset)
-  if (room.tileset) drawStamps(ctx, room, "top");
 
   // Partículas (corazones...), encima de los objetos
   drawParticles(ctx, room);

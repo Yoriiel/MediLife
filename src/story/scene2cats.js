@@ -16,9 +16,6 @@ const HEAD_OFFSET_Y = 20;
 // Desplazamiento lateral de cada burbuja (para que la de Conejito no tape a Medi al salir)
 const BUBBLE_SHIFT = { pacho: 0, conejito: 16 };
 
-// Zona de interacción alrededor de las patas del gato (píxeles de la habitación, medidos desde el
-// centro de la caja de pies de Medi): a los lados, hacia arriba y hacia abajo.
-// Medi se detiene pegada al cuerpo del gato, así que estos márgenes dejan una franja cómoda.
 const REACH = { side: 22, up: 20, down: 10 };
 
 // Cuánto más hay que alejarse (píxeles extra sobre REACH) para que el gato al que se le dijo "No" maúlle
@@ -36,7 +33,7 @@ function clearState() {
 }
 
 // Punto de donde sale la burbuja de un gato (coordenadas de la habitación), encima de su cabeza
-export function catBubble(cat) {
+function catBubble(cat) {
   return { x: cat.x, y: cat.y - HEAD_OFFSET_Y, above: true, dx: BUBBLE_SHIFT[cat.id] || 0 };
 }
 
@@ -44,7 +41,7 @@ export function catBubble(cat) {
 const FED_LINE = { pacho: "scene2.fedPacho", conejito: "scene2.fedConejito" };
 
 // Nombre de la marca que indica que ese gato ya comió
-export function fedFlag(cat) {
+function fedFlag(cat) {
   return "fed_" + cat.id;
 }
 
@@ -79,7 +76,6 @@ function finishMission1() {
 }
 
 // Acariciar al gato: los mismos corazones de siempre sobre su cabeza
-// (si ya había comido, las partículas verdes siguen su curso)
 function petCat(cat) {
   playSfx("meow2"); // gatos2 cada vez que lo acaricia
   playPurr(cat.id); // y ronronea (se reinicia si ya estaba ronroneando)
@@ -103,9 +99,7 @@ function giveSausage(cat) {
   });
 }
 
-// Revisa si Medi acaba de acercarse a un gato: si aún no ha comido y Medi tiene salchichas, pregunta
-// "¿Dar salchicha?"; en cualquier otro caso pregunta "¿Acariciar?".
-// También revisa si se alejó de uno al que le dijo "No" (entonces ese gato maúlla)
+// Revisa si Medi acaba de acercarse a un gato: si aún no ha comido y Medi tiene salchichas
 function updateGiveFood() {
   for (const cat of CATS) {
     if (declined[cat.id] && !isNear(cat, LEAVE_MARGIN)) {

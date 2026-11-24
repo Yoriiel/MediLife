@@ -1,12 +1,4 @@
 // Escena 1: La mañana y el hambre de Pacho
-//
-// 0. Tarjeta de fecha: negro medio transparente con "1 de Diciembre..." en blanco, centrado.
-// 1. La pantalla se aclara. Medi dice "Me desperté".
-// 2. Medi camina hacia el centro del cuarto.
-// 3. Al entrar en la zona del centro, los maullidos salen de la ventana (burbuja)
-//    y Medi dice "Necio, Pacho tiene hambre...". Aparece la misión 1.
-// 4. La primera vez que baja por las escaleras a la planta baja, Medi dice "wtf, esta no es mi casa"
-//    y justo después "yoyel tonti kxx" (marca "downstairsSaid": solo pasa una vez).
 
 import { fadeTo, setFadeText, isFading } from "../engine/fade.js";
 import { say, isDialogueActive } from "../engine/dialogue.js";

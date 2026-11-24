@@ -1,5 +1,4 @@
 // English texts.
-// Pacho, Conejito, Pacho vivaracho, Necio, Limpiecita, Vengashe, Barriguita llena, Estoy apestosa, Gachiassss mi vidaaa and Te amo mi amorcito are NOT translated.
 
 export default {
   "scene1.date": "December 1st...",
@@ -9,7 +8,6 @@ export default {
   "scene1.downstairs1": "wtf, this is not my house",
   "scene1.downstairs2": "yoyel tonti kxx",
 
-  "door.closed": "It's closed.",
   // Puertas del pasillo (1 fondo izq, 2 fondo der, 3 lateral izq, 4 lateral der, 5 abajo izq)
   "door.1": "That’s strange, Dad closed the door",
   "door.2": "Oh, Kiana must be busy",
@@ -47,14 +45,12 @@ export default {
   "scene2.fridgePrompt": "Take sausages?",
   "scene2.goOutside": "I'll go outside to give them these",
   "scene2.catMeow": "Meow!",
-  "scene2.giveFood": "Press [Space] to feed them",
   "scene2.givePrompt": "Give sausage?",
   "scene2.petPrompt": "Pet?",
   "scene2.fedPacho": "Pacho vivaracho",
   "scene2.fedConejito": "Necio kxx",
 
   "scene3.yico": "mmmm yico",
-  "scene3.enough": "That will be enough",
   "scene3.pizzaFridgePrompt": "Take pizza?",
   "scene3.hungry1": "Grrrr... I'm hungry",
   "scene3.hungry2": "I'll go eat something",
@@ -71,7 +67,6 @@ export default {
   "scene4.prompt": "Take a shower?",
   "choice.yes": "Yes",
   "choice.no": "No",
-  "scene4.shower": "(shhh... 'SHOWER SOUNDS')",
   "scene4.clean": "Limpiecita",
 
   "scene6.surprise1": "Everyone: Surpriseeeeee!!!!!",
@@ -129,8 +124,6 @@ export default {
   "options.volume": "Volume",
   "options.particles": "Particles",
   "options.language": "Language",
-  "options.on": "ON",
-  "options.off": "OFF",
   "lang.name": "English",
   "pause.title": "Paused",
   "pause.resume": "Back to game",

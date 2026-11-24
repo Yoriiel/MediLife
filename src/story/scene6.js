@@ -1,14 +1,4 @@
 // Escena 6: la fiesta sorpresa
-//
-// 1. Justo después de "Limpiecita" (story/scene4.js llama a startPartySurprise), Medi camina sola
-//    hasta la izquierda de la mesa del pastel (engine/autowalk.js) y se queda mirando hacia la mesa.
-// 2. Aparecen los cuadros de Yori y la familia: "¡Sorpresaaaaaa!", "Feliz Cumpleaños Mediiii"
-//    y "Te hicimos una fiesta de cumpleaños... ¿te gusta?".
-// 3. Medi responde: "Siii, me encantaaa!!!", "Gachiassss mi vidaaa!!!" y "Vengasheee!!!"
-//    (los dos últimos no se traducen).
-// El pastel, los banners y los sprites de la fiesta ya se ven desde que termina la ducha
-// (showIf: "showerDone" en rooms/plantabaja.js).
-// La marca "partyDone" queda activa al terminar (por si más adelante hay una escena final).
 
 import { say } from "../engine/dialogue.js";
 import { walkTo } from "../engine/autowalk.js";

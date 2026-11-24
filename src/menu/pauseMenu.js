@@ -1,9 +1,4 @@
 // Menú de pausa: se abre con Escape o con el botón de 3 rayitas de la esquina superior derecha.
-// Congela el juego (main.js) y trae: Volver al juego, las opciones (música, volumen, partículas, idioma)
-// y Salir al menú principal (pide confirmar y recarga la página: la partida vuelve a empezar de cero).
-//   tryOpenPause(dialogueActive) -> abre la pausa si se pulsó Escape o el botón; devuelve true si la abrió
-//   isPaused() / updatePauseMenu() / drawPauseButton(ctx) / drawPauseMenu(ctx)
-// Con un cuadro de diálogo abierto Escape no abre la pausa (ahí cierra los menús de Yori); el botón sí.
 
 import { FONT_FAMILY, VIEW_W, VIEW_H } from "../config.js";
 import { t } from "../i18n/index.js";

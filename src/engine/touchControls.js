@@ -1,5 +1,4 @@
 // Controles táctiles: la cruceta y el botón A simulan teclas (ver setVirtualKey en input.js).
-// Nunca se usa stopPropagation: el primer toque también debe desbloquear el audio.
 
 import { setVirtualKey, releaseVirtualKeys } from "./input.js";
 
@@ -21,9 +20,6 @@ function blockBrowserGestures() {
   for (const name of ["selectstart", "copy", "cut", "dragstart"]) document.addEventListener(name, stop);
 }
 
-// Blindaje de la zona de los botones (cruceta y A): sin zoom (pellizco ni doble toque), sin lupa,
-// sin menú de copiar / pegar / compartir y sin selección ni arrastre. Solo se frena lo que hace el
-// navegador por su cuenta: los eventos de puntero (pointerdown...) siguen llegando para jugar.
 function lockControl(el) {
   const stop = (e) => {
     if (e.cancelable) e.preventDefault();
@@ -107,7 +103,7 @@ export function initTouchControls(onLayoutChange) {
     fingers.set(e.pointerId, readFinger(e));
     try {
       dpad.setPointerCapture(e.pointerId); // deslizar fuera de la cruceta sigue contando
-    } catch (err) {}
+    } catch {}
     syncDirs();
   });
   dpad.addEventListener("pointermove", (e) => {
@@ -134,7 +130,7 @@ export function initTouchControls(onLayoutChange) {
     actionPointer = e.pointerId;
     try {
       actionBtn.setPointerCapture(e.pointerId);
-    } catch (err) {}
+    } catch {}
     setVirtualKey(" ", true);
     actionBtn.classList.add("on");
   });

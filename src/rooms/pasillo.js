@@ -1,4 +1,3 @@
-
 const WALL = "#".repeat(20);
 const ROW = "#" + ".".repeat(18) + "#";
 const BOTTOM = "#".repeat(14) + "dd" + "#".repeat(4); // puerta de Medi (columnas 14-15): se camina, se ve negro
@@ -31,7 +30,6 @@ export default {
 
 
     // escalera en el piso: sólida, salvo el descanso de la izquierda (10 px), que es la entrada.
-    // Zonas sólidas: riel de arriba y de abajo del descanso + todo el cuerpo de la escalera.
     { sprite: "stairs-floor", x: 115, y: 65, layer: "floor",
       solid: [[0, 0, 10, 5], [0, 31, 10, 5], [10, 0, 75, 36]] },
 
@@ -56,8 +54,7 @@ export default {
     { type: "text", zone: [292, 112, 12, 32], text: "door.4" }, // puerta 4 (lateral derecha)
     { type: "text", zone: [64, 178, 32, 14], text: "door.5" },  // puerta 5 (abajo izquierda)
 
-    // escalera: solo se baja entrando por la izquierda (el descanso). Lleva a la planta baja,
-    // junto a la escalera del nicho (a su derecha, mirándola)
+    // escalera: solo se baja entrando por la izquierda (el descanso)
     { type: "exit", zone: [118, 71, 8, 24], to: "plantabaja", spawn: { x: 45, y: 110 }, facing: "left" },
 
     // puerta 6: de vuelta al cuarto de Medi

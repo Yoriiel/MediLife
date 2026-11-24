@@ -1,28 +1,4 @@
 // Zonas activables de cada habitación (room.triggers):
-//   { type: "exit", zone: [x, y, ancho, alto], to: "idHabitacion", spawn: {x, y}, facing }
-//       -> al entrar en la zona, cambia de habitación
-//          (opcional: mission: "clave" -> solo funciona mientras esa misión esté activa)
-//          (opcional: afterFlag: "marca" -> además, funciona siempre que esa marca ya esté activa,
-//           sin importar la misión actual)
-//   { type: "text", zone: [...], text: "clave", once: true }
-//       -> al entrar en la zona, muestra un cuadro de texto (once: solo la primera vez)
-//          (opcional: unless: "marca" -> no se muestra si esa marca ya está activa)
-//   { type: "shower", zone: [...], facing: "down" }
-//       -> al entrar en la zona, empieza la escena de la ducha (story/scene4.js),
-//          pero SOLO en la misión 3, con la bata ya tomada y si aún no se duchó; si no, no pasa nada
-//   { type: "wardrobe", zone: [...], facing: "up" }
-//       -> al entrar en la zona, pregunta "¿Tomar bata de baño?" (story/scene4.js),
-//          pero SOLO en la misión 3 y mientras no la haya tomado
-//   { type: "fridgeMore", zone: [...], facing: "up" }
-//       -> al entrar en la zona, pregunta "¿Tomar plátano y pepino?" (story/scene3.js),
-//          pero SOLO en la misión 2, después de "Quiero un poco más", y si aún no los tomó
-//   { type: "chest", zone: [...], facing: "up" }
-//       -> al entrar en la zona, el cofre del cuarto (story/chest.js): sin la llave dice que está cerrado;
-//          con la llave abre el dibujo de Medi (visor con botón para descargar). Siempre disponible
-//   { type: "fridge", zone: [...], facing: "up" }
-//       -> al entrar en la zona, pregunta "¿Tomar salchichas?" (story/scene2.js),
-//          pero SOLO si la misión actual es "mission1" y aún no las tomó; si no, no pasa nada
-// Las zonas se activan al ENTRAR en ellas; para repetir hay que salir y volver a entrar.
 
 import { say } from "./dialogue.js";
 import { goToRoom } from "./world.js";

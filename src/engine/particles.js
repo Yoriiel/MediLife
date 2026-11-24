@@ -1,18 +1,3 @@
-// Partículas (corazones, destellos verdes, etc.) que flotan sobre la escena.
-//   emitHearts(roomId, x, y, onDone)
-//       -> lanza corazones que suben y se desvanecen alrededor del punto (x, y) de la habitación
-//          (coordenadas de la habitación; x = centro, y = altura de la cabeza).
-//          Dura ~2 segundos en total. onDone (opcional) se llama cuando desaparece el último corazón.
-//   startSatisfied(id, roomId, x, y)
-//       -> partículas verdes constantes y lentas ("gato satisfecho") alrededor del punto (x, y).
-//          No terminan solas. "id" identifica al emisor (p. ej. "pacho"): si ya existe, no se duplica.
-//   stopSatisfied(id)
-//       -> detiene ese emisor (las partículas que ya salieron se desvanecen solas).
-//   drawParticles(ctx, room)
-//       -> se llama desde drawScene (ya con la habitación trasladada); avanza y dibuja las partículas.
-// Sprites: public/particles/heart-small.png (7x7) y public/particles/sparkle.png (7x7).
-// (heart.png, el corazón grande de 13x12, ya no se usa; se puede conservar o borrar.)
-
 import { loadAssets, getImage } from "./assets.js";
 import { getSettings } from "./settings.js";
 
@@ -48,7 +33,7 @@ loadAssets([SPARK_IMAGE]).catch((err) => console.warn("No se pudo cargar la part
 
 const particles = [];
 const emitters = [];       // corazones (terminan solos)
-const sparkEmitters = [];  // partículas verdes (permanentes hasta stopSatisfied)
+const sparkEmitters = [];  // partículas verdes (permanentes)
 let lastTime = null;
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -60,11 +45,6 @@ export function emitHearts(roomId, x, y, onDone) {
 export function startSatisfied(id, roomId, x, y) {
   if (sparkEmitters.some((s) => s.id === id)) return; // ya está activo
   sparkEmitters.push({ id, room: roomId, x, y, wait: 0 });
-}
-
-export function stopSatisfied(id) {
-  const i = sparkEmitters.findIndex((s) => s.id === id);
-  if (i >= 0) sparkEmitters.splice(i, 1);
 }
 
 function spawnHeart(e) {

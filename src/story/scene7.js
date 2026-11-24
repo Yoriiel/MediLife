@@ -1,54 +1,4 @@
 // Escena 7: después de la fiesta, Medi y Yori (el final del juego)
-//
-// PARTE 1 — Yori te habla
-//   Cuando termina la fiesta (marca "partyDone", la pone story/scene6.js) y Medi se acerca a Yori,
-//   Medi camina sola hasta quedar a su lado (engine/autowalk.js) y Yori le habla en el cuadro de abajo:
-//   "Te amo mi amorcito" y "Toma, esto es para ti".
-//   Funciona igual que la nevera y el armario: salta al ENTRAR en la zona de Yori (para repetir hay que
-//   salir y volver a entrar) y solo pasa una vez (marca "yoriMet").
-//
-// La zona se calcula sola a partir de la posición de Yori en rooms/plantabaja.js (el objeto cuyo sprite
-// es "yori"): si lo mueves a mano, la zona lo sigue. Los márgenes se ajustan en REACH.
-//
-// PARTE 2 — El ramo
-//   En "Toma, esto es para ti" el ramo (public/objects/rosesgif.png) sale en grande dentro del cuadro de
-//   texto. Al cerrarlo, Medi lo lleva flotando sobre la cabeza como la bata (public/objects/roseshead.png,
-//   engine/carry.js) y se activa la marca "rosesGiven".
-//
-// PARTE 3 — Menú Besar / Slap / Morder
-//   Con el ramo ya entregado ("rosesGiven"), cada vez que Medi ENTRA en la zona de Yori (salir y volver a
-//   entrar para repetir) Medi se gira hacia él y sale la pregunta con tres opciones, igual que con los gatos.
-//   Cada opción suena con su sonido (engine/sfx.js: kiss, slap, bite).
-//
-// MENÚ QUE SE QUEDA ABIERTO
-//   El menú no se cierra al elegir: se pueden dar todos los besos, slaps o mordidas que se quiera.
-//   Para irse: la X de la esquina del cuadro (clic / toque, o con teclado: flechas hasta la X y Espacio / Enter / E),
-//   clic / toque FUERA del cuadro de texto, o Escape. Mientras está abierto, Medi no se mueve.
-//
-// PARTE 4 — Corazones
-//   Justo después de cada acción (Besar, Slap o Morder) salen corazones sobre la cabeza de Yori y también
-//   sobre la de Medi (por encima del ramo, si lo lleva). Usan los mismos corazones de los gatos
-//   (engine/particles.js) y respetan el ajuste "Partículas". Ajustes: HEARTS.
-//
-// PARTE 5 — El menú sale justo después del ramo
-//   Al cerrar "Toma, esto es para ti" el menú aparece enseguida, sin salir y volver a entrar a la zona.
-//
-// PARTE 6 — Medi se pega a Yori
-//   Al elegir Besar / Slap / Morder, Medi se acerca juntito a Yori, hace la acción y se queda ahí
-//   hasta que la muevas. Ajustes: CLOSE_SPOT.
-//
-// PARTE 7 — Créditos finales
-//   Tras la primera acción, al cerrar el menú se activa el final (story/ending.js).
-//
-// PARTE 8 — Yori comenta el dibujo (una sola vez)
-//   Si Medi ya vio el dibujo del cofre (marca "drawingSeen", la pone story/chest.js), antes del menú Yori
-//   le pregunta "jajajjd te gustó el dibujo?" y Medi responde "Siiiiii te amo". Luego sale el menú.
-//   Sale en los dos casos: justo después del ramo (si vio el dibujo antes de la fiesta), o la siguiente vez
-//   que Medi entra en la zona de Yori (si vio el dibujo después). Se marca "drawingTalkDone".
-//
-// PARTE 9 — Misión "Ve donde yoyel"
-//   Cuando Medi ya vio el dibujo (y la fiesta terminó, o sea Yori ya está en la casa), sale la misión
-//   "Ve donde yoyel" para que sepa a dónde ir. Se quita cuando ya se hizo el comentario del dibujo.
 
 import { say, ask, isDialogueActive } from "../engine/dialogue.js";
 import { isFading } from "../engine/fade.js";
@@ -76,13 +26,10 @@ const YORI_SPRITE = "yori";
 // Pies de Yori dentro de su cuadro de 32x32 (x = centro del cuerpo, y = fila donde apoya)
 const YORI_FEET = { x: 16, y: 27 };
 
-// Zona de interacción alrededor de los pies de Yori (píxeles de la habitación, medidos desde el centro
-// de la caja de pies de Medi): a los lados, hacia arriba y hacia abajo.
+// Zona de interacción alrededor de los pies de Yori
 const REACH = { side: 26, up: 22, down: 12 };
 
-// Dónde se detiene Medi junto a Yori: esquina superior izquierda de su caja de pies, relativa a los pies
-// de Yori. "left" = a la izquierda de Yori (mirando a la derecha); "right" = a su derecha.
-// Quedan un poco más arriba que Yori para no quedar detrás del pastel.
+// Dónde se detiene Medi junto a Yori: esquina superior izquierda de su caja de pies
 const TALK_SPOT = {
   left: { dx: -19, dy: -12, facing: "right" },
   right: { dx: 9, dy: -12, facing: "left" },
@@ -102,12 +49,11 @@ const MENU_ACTIONS = [
 ];
 
 // Corazones tras cada acción
-//   delay = segundos entre el sonido y los corazones (0 = a la vez)
-//   yoriHeadAbove = altura de la cabeza de Yori sobre sus pies (píxeles)
 const HEARTS = { delay: 0.15, yoriHeadAbove: 21 };
 
 // ¿Medi estaba ya dentro de la zona en el cuadro anterior? (la escena solo salta al ENTRAR)
 let inside = false;
+let wasPending = false; // el comentario del dibujo estaba pendiente en el cuadro anterior
 
 // Busca a Yori en la habitación y devuelve sus pies en coordenadas de la habitación
 function getYoriFeet(room) {
@@ -139,9 +85,9 @@ function startYoriTalk(feet) {
   }, spot.facing);
 }
 
-// ¿Medi ya vio el dibujo del cofre y Yori aún no lo ha comentado?
+// ¿Medi ya vio el dibujo, pasaron los créditos y Yori aún no lo ha comentado?
 function drawingPending() {
-  return hasFlag("drawingSeen") && !hasFlag("drawingTalkDone");
+  return hasFlag("drawingSeen") && hasFlag("creditsShown") && !hasFlag("drawingTalkDone");
 }
 
 // Yori pregunta por el dibujo y Medi responde; al cerrar, sale el menú
@@ -239,6 +185,9 @@ function startYoriMenu(feet) {
 // Se llama en cada cuadro (main.js)
 export function updateYoriScene(room) {
   updateYoyelMission(); // misión "Ve donde yoyel" (sale en cualquier habitación)
+  const pending = drawingPending();
+  if (pending && !wasPending) inside = false; // tras los créditos, si ya está junto a Yori, el comentario salta solo
+  wasPending = pending;
   if (room.id !== ROOM_ID) {
     inside = false; // al volver a entrar, la zona se evalúa de cero
     return;

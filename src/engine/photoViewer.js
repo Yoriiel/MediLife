@@ -1,9 +1,3 @@
-// Visor de foto a pantalla casi completa (un marco grande con un dibujo dentro).
-//   openPhotoViewer({ image, downloadName })  -> abre el visor con la imagen (ruta en public/, sin .png)
-//   isPhotoViewerActive() / updatePhotoViewer() / drawPhotoViewer(ctx)   (main.js)
-// Mientras está abierto, el juego queda congelado. Se cierra con la X (clic / toque), Escape, Enter, Espacio o E.
-// El botón "Descargar foto" baja la imagen al dispositivo (es la misma imagen que se ve, en su tamaño original).
-
 import { VIEW_W, VIEW_H, FONT_FAMILY } from "../config.js";
 import { t } from "../i18n/index.js";
 import { getImage } from "./assets.js";

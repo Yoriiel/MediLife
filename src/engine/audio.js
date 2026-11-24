@@ -1,18 +1,7 @@
-// Música de fondo. Respeta los ajustes de settings.js (activada/desactivada y volumen) al instante.
-//   playMusic("menu" | "game" | "ending") -> pone esa pista (en bucle, salvo que se indique otra cosa; si ya suena, no la reinicia)
-//   stopMusic(fade)             -> la detiene (fade = segundos de fundido de salida, opcional)
-//   initAudio()                 -> llamar una vez: desbloquea el audio con la primera tecla o clic
-//                                  (los navegadores no dejan sonar nada antes de que la jugadora interactúe)
-//
-// Pistas: pon los archivos en public/audio/ y escribe aquí su ruta.
-// Mientras una pista no exista (o la ruta sea null) simplemente no suena nada y el juego sigue normal.
-// Por pista: volume = volumen propio (0 a 1, se multiplica por el volumen general); loop = false para que suene una vez.
-
 import { getSettings, onSettingsChange } from "./settings.js";
 
 const TRACKS = {
   menu: { src: "/audio/menu.mp3" },
-  game: { src: "/audio/game.mp3" },
   ending: { src: "/audio/endingsong.mp3", volume: 0.4 }, // canción de los créditos
 };
 

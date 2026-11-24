@@ -1,19 +1,4 @@
 // Menús con teclado y mouse (los usan el menú principal y el menú de pausa).
-//
-//   createMenu({ items, cx, y, w, rowH, onBack })
-//       items: lista de filas. Cada fila tiene un "type":
-//         { type: "button", label: () => texto, onSelect: () => {} }
-//         { type: "toggle", label: () => texto, get: () => bool, set: (bool) => {} }
-//         { type: "slider", label: () => texto, get: () => 0..1, set: (v) => {}, dim: () => bool (opcional) }
-//         { type: "choice", label: () => texto, value: () => texto, onChange: (dir) => {} }   dir = -1 o 1
-//       cx = centro horizontal; y = borde superior de la primera fila; w = ancho; rowH = alto por fila
-//       onBack: se llama al pulsar Escape (opcional)
-//       outline: color del contorno de cada fila, por ejemplo "#f5deb3" (opcional; sin él no hay contorno)
-//   updateMenu(menu)   -> lee teclado y mouse (llamar una vez por cuadro)
-//   drawMenu(ctx, menu)
-//
-// Teclado: ↑↓ / W S mueven; Enter, Espacio o E activan; ←→ / A D cambian valores; Escape = onBack.
-// Mouse: pasar sobre una fila la selecciona; clic la activa; en la barra de volumen se puede arrastrar.
 
 import { FONT_FAMILY } from "../config.js";
 import { wasPressed, getMouse } from "../engine/input.js";

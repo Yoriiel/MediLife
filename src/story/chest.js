@@ -1,11 +1,4 @@
 // Cofre del cuarto de Medi (rooms/cuarto.js, trigger type "chest").
-//   Sin la llave ("keyTaken") y sin abrir: al entrar en la zona sale "Está cerrado con llave".
-//   Con la llave y sin abrir: al entrar en la zona sale el cuadro "¿Abrir cofre?" con Sí / No.
-//     Sí -> la llave desaparece del inventario, el cofre queda abierto ("chestOpened") y se muestra el dibujo.
-//     No -> se cierra el cuadro (al volver a entrar, vuelve a preguntar).
-//   Ya abierto: encima del cofre sale "Abrir" mientras Medi está en la zona; al presionar Espacio, Enter, E
-//     o el botón A (táctil) se muestra el dibujo. Ya no hace falta la llave.
-//   El visor del dibujo (engine/photoViewer.js) tiene una X para cerrarlo y un botón para descargar la foto.
 
 import { say, ask, isDialogueActive } from "../engine/dialogue.js";
 import { isFading } from "../engine/fade.js";
@@ -14,6 +7,7 @@ import { loadAssets } from "../engine/assets.js";
 import { wasPressed } from "../engine/input.js";
 import { removeItem } from "../engine/inventory.js";
 import { openPhotoViewer, isPhotoViewerActive } from "../engine/photoViewer.js";
+import { playSfx } from "../engine/sfx.js";
 import { t } from "../i18n/index.js";
 import { FONT_FAMILY } from "../config.js";
 import { player } from "../entities/player.js";
@@ -35,6 +29,7 @@ loadAssets([CHEST_PHOTO]).catch((err) => console.warn("No se pudo cargar el dibu
 
 function showPhoto() {
   setFlag("drawingSeen"); // Medi ya vio el dibujo: Yori lo comenta después (story/scene7.js, parte 8)
+  playSfx("paper"); // sonido de hoja justo al salir el dibujo
   openPhotoViewer({ image: CHEST_PHOTO, downloadName: CHEST_PHOTO_NAME });
 }
 

@@ -1,24 +1,3 @@
-// Objetos para recoger ("pickups"): un objeto que flota (sube y baja) sobre un lugar y SOLO se ve
-// mientras Medi lo toca o está pegada a él (por ejemplo, la llave sobre el arbusto del exterior).
-// Se definen en cada habitación (room.pickups):
-//   { id: "key", sprite: "key", x: 224, y: 205, touch: [214, 203, 36, 26], margin: 2, unless: "keyTaken" }
-//     id     = nombre del objeto (el mismo de ITEMS en engine/inventory.js)
-//     sprite = imagen en public/objects/ (sin .png)
-//     x, y   = punto de reposo del sprite: esquina superior izquierda, en píxeles de la habitación
-//     touch  = [x, y, ancho, alto] de lo que hay que tocar (aquí, el sólido del arbusto)
-//     margin = (opcional) píxeles de tolerancia alrededor de `touch`; con 0 solo cuenta si se superpone
-//              (algo sólido no se puede atravesar, así que usa al menos 1). Por defecto, DEFAULT_MARGIN
-//     unless = (opcional) marca de events.js que se activa al tomarlo; con ella activa ya no aparece.
-//              Sin `unless` se usa la marca "taken_<id>"
-//     slot   = (opcional) espacio del inventario donde se guarda: 0 = el primero... -1 = el último (por defecto,
-//              el de más a la derecha). Si está ocupado, se usa el primer espacio libre
-//
-// Al TOCARLO (al entrar en la zona; para repetir hay que alejarse y volver) sale un cuadro con UNA sola opción:
-//   "Llave secreta" y debajo "Tomar". No hay "No": hay que tomarlo. Los textos salen de i18n por id:
-//   pickup.<id>.prompt y pickup.<id>.take (ej. pickup.key.prompt / pickup.key.take).
-//   Al elegir "Tomar" el objeto pasa al inventario, se activa la marca y deja de aparecer.
-//   (Si algún día quieres poder cerrar el cuadro sin tomarlo: añade { onCancel: () => {} } como 4º argumento de ask.)
-
 import { ask, isDialogueActive } from "./dialogue.js";
 import { addItem } from "./inventory.js";
 import { isFading } from "./fade.js";
@@ -39,7 +18,7 @@ function takenFlag(p) {
 }
 
 // ¿La caja de pies de Medi toca (o casi) la zona `touch` del objeto?
-export function isTouching(p, player) {
+function isTouching(p, player) {
   const m = p.margin ?? DEFAULT_MARGIN;
   const [zx, zy, zw, zh] = p.touch;
   return (
